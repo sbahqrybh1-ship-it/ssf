@@ -1,0 +1,2147 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة الإصباح التعليمية في اللغة العربية</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --color-primary: #8a1538;
+            --color-primary-hover: #773347;
+            --color-blue: #165a7b;
+            --color-text: #313b40;
+            --color-grey1: #f5f4ef;
+            --font-primary: 'Cairo', sans-serif;
+        }
+        html, body {
+            margin: 0; padding: 0;
+            font-family: var(--font-primary);
+            direction: rtl; background: #f8fafc;
+            color: var(--color-text); line-height: 1.8; font-size: 18px;
+        }
+        .primary-button { background: var(--color-primary); color: #fff; border-radius: 8px; transition: all 0.2s ease; }
+        .primary-button:hover { background: var(--color-primary-hover); transform: translateY(-1px); }
+        .gov-gray-box { background-color: var(--color-grey1); border: 1px solid #cbd5e1; }
+        .maroon-header { background-color: var(--color-primary); }
+        .blue-header { background-color: var(--color-blue); }
+        .admin-tab-active { background-color: #8a1538; color: white !important; font-weight: bold; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <div class="blue-header text-white text-xs py-2 px-4 shadow-sm">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div id="student-badge" class="hidden items-center gap-2 bg-white/10 px-3 py-1 rounded-full text-xs">
+                    <i class="fa-solid fa-user-graduate text-[#EAB893]"></i>
+                    <span id="header-student-name" class="font-bold"></span>
+                    <span class="text-slate-300">|</span>
+                    <span id="header-student-branch" class="text-[#EAB893]"></span>
+                    <button onclick="resetStudentData()" class="mr-1 text-[11px] text-slate-300 hover:text-white underline" title="تغيير البيانات">تغيير</button>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-xs text-slate-200">حجم الخط:</span>
+                <button onclick="adjustFontSize(1)" class="px-2 py-0.5 bg-white/10 hover:bg-white/20 rounded text-xs font-bold">A+</button>
+                <button onclick="adjustFontSize(-1)" class="px-2 py-0.5 bg-white/10 hover:bg-white/20 rounded text-xs font-bold">A-</button>
+            </div>
+        </div>
+    </div>
+
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3.5 cursor-pointer" onclick="go('home')">
+                <div class="w-12 h-12 rounded-xl maroon-header text-white flex items-center justify-center font-bold text-xl shadow">
+                    أ
+                </div>
+                <div>
+                    <h2 class="text-base font-bold text-[#8a1538] leading-tight">منصة الإصباح التعليمية</h2>
+                    <p class="text-xs text-slate-500 font-normal">الصف الثاني عشر – اللغة العربية</p>
+                </div>
+            </div>
+
+            <nav class="hidden md:flex items-center gap-5 text-sm font-medium text-slate-700">
+                <button onclick="go('home')" class="hover:text-[#8a1538] transition-colors">الرئيسية</button>
+                
+                <!-- اختيار الدروس Dropdown -->
+                <div class="relative group">
+                    <button class="hover:text-[#8a1538] transition-colors flex items-center gap-1 py-2">
+                        <span>اختيار الدروس</span>
+                        <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                    </button>
+                    <div id="lessons-dropdown-menu" class="absolute top-full right-0 w-64 bg-white shadow-xl rounded-xl border border-slate-200 py-2 hidden group-hover:block z-50 max-h-80 overflow-y-auto">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- التدريبات Dropdown -->
+                <div class="relative group">
+                    <button onclick="openQuizPicker()" class="hover:text-[#8a1538] transition-colors flex items-center gap-1 py-2">
+                        <span>التدريبات</span>
+                        <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                    </button>
+                    <div id="quizzes-dropdown-menu" class="absolute top-full right-0 w-64 bg-white shadow-xl rounded-xl border border-slate-200 py-2 hidden group-hover:block z-50 max-h-80 overflow-y-auto">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <button onclick="checkBranchAccess('comprehensive')" class="hover:text-[#8a1538] transition-colors">اختبارات شاملة</button>
+                <button onclick="go('about')" class="hover:text-[#8a1538] transition-colors">عن المنصة</button>
+            </nav>
+
+            <div class="flex items-center gap-2.5">
+            </div>
+        </div>
+    </header>
+
+    <div id="announcement-banner" class="hidden bg-amber-500 text-white text-xs font-semibold py-2.5 px-4 shadow-inner text-center">
+        <div class="max-w-7xl mx-auto flex items-center justify-center gap-2">
+            <i class="fa-solid fa-bullhorn text-amber-200"></i>
+            <span id="announcement-text"></span>
+        </div>
+    </div>
+
+    <!-- Main Content App Container -->
+    <div class="flex-grow max-w-7xl w-full mx-auto px-4 py-8">
+        <main class="space-y-6" id="app-content">
+            <!-- Injected via JavaScript -->
+        </main>
+    </div>
+
+    <div id="admin-login-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl border border-slate-200">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-lock text-[#8a1538]"></i>
+                    <span>تسجيل دخول المعلم (لوحة التحكم)</span>
+                </h3>
+                <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4 text-xs md:text-sm">
+                <div class="space-y-1.5">
+                    <label class="block font-semibold text-slate-700">البريد الإلكتروني:</label>
+                    <input type="email" id="admin-email" required placeholder="ادخل البريد الإلكتروني الخاص بك" class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#8a1538] outline-none">
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block font-semibold text-slate-700">كلمة السر:</label>
+                    <input type="password" id="admin-password" required placeholder="••••••••" class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#8a1538] outline-none">
+                </div>
+
+                <div id="login-error" class="hidden text-rose-600 text-xs bg-rose-50 p-2.5 rounded-lg border border-rose-200 font-semibold">
+                    بيانات الدخول غير صحيحة! يرجى التأكد من البريد وكلمة السر.
+                </div>
+
+                <button type="submit" class="w-full py-3 primary-button text-sm font-bold shadow">
+                    دخول اللوحة
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modals for Admin Add/Edit Content -->
+    <div id="admin-editor-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
+            <div id="editor-modal-content"></div>
+        </div>
+    </div>
+
+    <footer class="bg-[#165A7B] text-slate-100 mt-16 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-6 text-sm font-['Cairo']">
+            <div class="space-y-3">
+                <div class="flex items-center gap-2 text-white font-bold text-base">
+                    <div class="w-8 h-8 rounded-lg bg-[#8a1538] flex items-center justify-center text-white">أ</div>
+                    <span>منصة الإصباح التعليمية</span>
+                </div>
+                <p class="text-slate-200 leading-relaxed text-xs font-['Open_Sans']">
+                    مرجعك الأول لدراسة النحو والصرف وقواعد اللغة العربية للصف الثاني عشر بأسلوب مبسط وشامل.
+                </p>
+            </div>
+
+            <div class="space-y-3">
+                <h4 class="font-bold text-white text-xs">روابط سريعة</h4>
+                <div class="flex flex-col space-y-2 text-slate-200 text-xs">
+                    <button onclick="go('home')" class="text-right hover:text-[#EAB893] transition-colors">الرئيسية</button>
+                    <button onclick="checkBranchAccess('branch')" class="text-right hover:text-[#EAB893] transition-colors">اختيار الدروس</button>
+                    <button onclick="checkBranchAccess('quizzes')" class="text-right hover:text-[#EAB893] transition-colors">التدريبات</button>
+                    <button onclick="checkBranchAccess('comprehensive')" class="text-right hover:text-[#EAB893] transition-colors">اختبارات شاملة</button>
+                    <button onclick="go('about')" class="text-right hover:text-[#EAB893] transition-colors">عن المنصة</button>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <h4 class="font-bold text-white text-xs">إدارة المنصة</h4>
+                <div class="flex flex-col space-y-2 text-xs">
+                    <button onclick="openAdminModal()" class="text-right text-[#EAB893] hover:underline font-bold flex items-center gap-1.5">
+                        <i class="fa-solid fa-lock text-xs"></i>
+                        <span>دخول لوحة التحكم (المعلم الأدمن)</span>
+                    </button>
+                    <p class="text-slate-300 font-['Open_Sans']">منصة تعليمية معتمدة للتعلم الذاتي والتفاعلي</p>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-[#165A7B]/60 py-4 text-center text-xs text-slate-300 font-['Cairo']">
+            جميع الحقوق محفوظة &copy; 2026 - منصة الإصباح في اللغة العربية
+        </div>
+    </footer>
+
+    <script>
+        const defaultTeacherPhoto = "صورة1.jpg";
+        const ADMIN_EMAIL = "sabbahquraiba2024@gmail.com";
+        const ADMIN_PASS = "803352590Sb";
+        
+        let isAdminLoggedIn = false;
+        let activeAdminTab = 'settings';
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+        let currentLevelPos = 0;
+        let levelCorrect = {};
+        let stageResultShown = false;
+
+        const QUIZ_LEVELS = [
+            { key: 'easy',   name: 'المستوى السهل',   points: 1, icon: 'fa-seedling', badge: 'bg-emerald-100 text-emerald-800', bar: 'bg-emerald-500', text: 'text-emerald-700', soft: 'bg-emerald-50 border-emerald-200' },
+            { key: 'medium', name: 'المستوى المتوسط', points: 2, icon: 'fa-bolt',     badge: 'bg-amber-100 text-amber-800',     bar: 'bg-amber-500',   text: 'text-amber-700',   soft: 'bg-amber-50 border-amber-200' },
+            { key: 'hard',   name: 'المستوى الصعب',   points: 3, icon: 'fa-fire',     badge: 'bg-rose-100 text-rose-800',       bar: 'bg-rose-500',    text: 'text-rose-700',    soft: 'bg-rose-50 border-rose-200' }
+        ];
+
+        function branchQuizzes(branch) {
+            return portalData.quizzes.filter(q => q.branch === branch || q.branch === 'all');
+        }
+        let selectedQuizLesson = null;
+        const GENERAL_LESSON = 'أسئلة عامة';
+        function quizLessons(branch) {
+            const names = [];
+            branchQuizzes(branch).forEach(q => { const n = q.lesson || GENERAL_LESSON; if (!names.includes(n)) names.push(n); });
+            const ORD = ['الأول', 'الثاني', 'الثالث', 'الرابع', 'الخامس', 'السادس'];
+            const rank = (n) => { const i = ORD.findIndex(o => n.includes('الدرس ' + o)); return i < 0 ? 99 : i; };
+            return names.sort((a, b) => rank(a) - rank(b));
+        }
+        function allLessonNames() {
+            const names = [];
+            portalData.quizzes.forEach(q => { const n = q.lesson || GENERAL_LESSON; if (!names.includes(n)) names.push(n); });
+            return names;
+        }
+        function lessonTitleFor(name) { return name === '__all__' ? 'اختبار شامل لجميع الدروس' : name; }
+        function resetQuizState() {
+            currentLevelPos = 0; currentQuizIndex = 0; quizScore = 0; levelCorrect = {};
+            stageResultShown = false; selectedOption = null; isAnswerSubmitted = false;
+            weakSkills = {}; remedial = null;
+        }
+        function openQuizLesson(name) {
+            if (!portalData.studentName || !portalData.studentBranch) { go('onboarding'); return; }
+            resetQuizState();
+            selectedQuizLesson = name;
+            go('quizzes');
+        }
+        function openQuizLessonIdx(i) { openQuizLesson(quizLessons(portalData.studentBranch)[i]); }
+        function openQuizPicker() {
+            resetQuizState();
+            selectedQuizLesson = null;
+            checkBranchAccess('quizzes');
+        }
+        function changeQuizLesson() { openQuizPicker(); }
+        let weakSkills = {};
+        let remedial = null;
+        function lessonIdx(n) { return ['الأول','الثاني','الثالث','الرابع','الخامس','السادس'].findIndex(o => (n || '').includes('الدرس ' + o)); }
+        function skillOf(q) {
+            if (q.skill) return q.skill;
+            const t = q.question, L = lessonIdx(q.lesson);
+            if (L === 0) return /اقتران/.test(t) ? 'حكم اقتران الخبر بـ (أن)' : /إعراب|اسم |خبر/.test(t) ? 'اسم الفعل الناسخ وخبره وإعرابه' : 'تمييز أفعال المقاربة والرجاء والشروع';
+            if (L === 1) return /علامة|إعراب/.test(t) ? 'علامات الجزم وإعراب فعلي الشرط' : /جواب|الفاء|فعل الشرط/.test(t) ? 'فعل الشرط وجوابه واقتران الفاء' : 'تمييز أدوات الشرط الجازمة';
+            if (L === 2) return /إعراب/.test(t) ? 'إعراب أداة الشرط وما بعدها' : /المعنى/.test(t) ? 'معنى أداة الشرط غير الجازمة' : /جواب|فعل الشرط/.test(t) ? 'فعل الشرط وجوابه' : 'تمييز أدوات الشرط غير الجازمة';
+            if (L === 3) return /نوع الخبر|الخبر شبه/.test(t) ? 'أنواع الخبر' : /إعراب/.test(t) ? 'إعراب المبتدأ والخبر' : /تقديم|حذف/.test(t) ? 'تقديم الخبر وحذفه' : 'أنواع المبتدأ';
+            if (L === 4) return /الصريح/.test(t) ? 'المصدر الصريح' : /موقع|محل/.test(t) ? 'موقع المصدر المؤول' : 'تمييز المصدر المؤول';
+            return 'تمييز المصدر الميمي';
+        }
+        // الأسئلة الأساسية: 1-2 لكل مهارة، ثم تكميل حتى 20 سؤالاً للدرس. الباقي احتياط للعلاج.
+        function mainIds(branch) {
+            const key = branch + '|' + portalData.quizzes.length;
+            if (mainIds._k === key) return mainIds._v;
+            const ids = new Set();
+            quizLessons(branch).forEach(n => {
+                const qs = branchQuizzes(branch).filter(q => (q.lesson || GENERAL_LESSON) === n);
+                const by = {};
+                qs.forEach(q => { (by[skillOf(q)] = by[skillOf(q)] || []).push(q); });
+                const groups = Object.values(by), target = Math.min(20, qs.length);
+                let count = 0;
+                for (let r = 0; r < 60; r++) {
+                    groups.forEach(a => { if (a[r] && (r < 2 || count < target)) { ids.add(a[r].id); count++; } });
+                    if (r >= 1 && count >= target) break;
+                }
+            });
+            mainIds._k = key; mainIds._v = ids;
+            return ids;
+        }
+        function reserveFor(branch, lesson, skills) {
+            const main = mainIds(branch);
+            return branchQuizzes(branch).filter(q => !main.has(q.id)
+                && (lesson === '__all__' || (q.lesson || GENERAL_LESSON) === lesson)
+                && (!skills || skills.includes(skillOf(q))));
+        }
+        function startRemedial(mode) {
+            const list = reserveFor(portalData.studentBranch, selectedQuizLesson, mode === 'weak' ? Object.keys(weakSkills) : null);
+            if (list.length === 0) { alert('لا توجد أسئلة احتياطية لهذه المهارات حالياً.'); return; }
+            remedial = { mode, list, idx: 0, correct: 0 };
+            selectedOption = null; isAnswerSubmitted = false;
+            renderApp();
+        }
+        function remedialSubmit() { isAnswerSubmitted = true; const q = remedial.list[remedial.idx]; if (selectedOption === q.correct) remedial.correct++; renderApp(); }
+        function remedialNext() { remedial.idx++; selectedOption = null; isAnswerSubmitted = false; renderApp(); }
+        function endRemedial() { remedial = null; selectedOption = null; isAnswerSubmitted = false; renderApp(); }
+        function activeLevels(branch, lesson) {
+            const all = branchQuizzes(branch).filter(q => mainIds(branch).has(q.id)).filter(q => !lesson || lesson === '__all__' || (q.lesson || GENERAL_LESSON) === lesson);
+            return QUIZ_LEVELS.map(l => ({ ...l, questions: all.filter(q => (q.level || 'medium') === l.key) }))
+                              .filter(l => l.questions.length > 0);
+        }
+        function branchLabel(b) { return b === 'sci' ? 'علمي' : b === 'lit' ? 'أدبي' : 'الفرعان'; }
+        function levelMeta(key) { return QUIZ_LEVELS.find(l => l.key === (key || 'medium')) || QUIZ_LEVELS[1]; }
+
+        let selectedOption = null;
+        let isAnswerSubmitted = false;
+
+        function lessonsNavHtml(branch) {
+            const lessons = quizLessons(branch);
+            if (lessons.length === 0) {
+                return `<div class="px-4 py-2 text-xs text-slate-400 text-center">لا توجد تدريبات مضافة حالياً</div>`;
+            }
+            return lessons.map((n, i) => {
+                const count = branchQuizzes(branch).filter(q => (q.lesson || GENERAL_LESSON) === n).length;
+                return `<button onclick="openQuizLessonIdx(${i})" class="w-full text-right px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 block"><i class="fa-solid fa-pen-to-square ml-1 text-slate-400"></i> ${n} <span class="text-slate-400">(${count} سؤال)</span></button>`;
+            }).join('');
+        }
+
+        function updateHeaderNav() {
+            const lessonsDropdown1 = document.getElementById('lessons-dropdown-menu');
+            const lessonsDropdown2 = document.getElementById('quizzes-dropdown-menu');
+            if (!lessonsDropdown1 || !lessonsDropdown2) return;
+
+            let branchKey = portalData.studentBranch;
+            let html1 = '';
+            let html2 = '';
+
+            if (branchKey === 'sci' || branchKey === 'lit') {
+                const isSci = branchKey === 'sci';
+                const color = isSci ? 'text-[#165A7B]' : 'text-[#8a1538]';
+                const name = isSci ? 'العلمي' : 'الأدبي';
+                html1 += `<div class="px-4 py-1.5 text-[11px] ${color} font-bold bg-slate-50">دروس الفرع ${name}:</div>`;
+                portalData.branches[branchKey].lessons.forEach(l => {
+                    html1 += `<button onclick="checkBranchAccessLesson('lesson', '${branchKey}', ${l.id})" class="w-full text-right px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 truncate block">${l.title}</button>`;
+                });
+
+                html2 += `<div class="px-4 py-1.5 text-[11px] ${color} font-bold bg-slate-50">تدريبات الفرع ${name}:</div>`;
+                html2 += lessonsNavHtml(branchKey);
+            } else {
+                html1 += `<div class="px-4 py-3 text-xs text-slate-500 text-center font-bold">يرجى تحديد الفرع أولاً</div>`;
+                html2 += `<div class="px-4 py-3 text-xs text-slate-500 text-center font-bold">يرجى تحديد الفرع أولاً</div>`;
+            }
+
+            lessonsDropdown1.innerHTML = html1;
+            lessonsDropdown2.innerHTML = html2;
+        }
+
+        function checkBranchAccessLesson(view, branch, lessonId) {
+            if (!portalData.studentName || !portalData.studentBranch) {
+                portalData.studentBranch = branch;
+                go('onboarding');
+            } else {
+                portalData.studentBranch = branch;
+                go(view, lessonId);
+            }
+        }
+
+        // لإضافة تدريب لدرس جديد: const mk2 = mkFor("الدرس الثاني: ...") ثم mk2("easy", سؤال, خيارات, رقم_الصحيح, شرح)
+        let _qid = 1000;
+        const mkFor = (lesson, branch = "all") => (level, question, options, correct, explanation) => ({ id: ++_qid, branch, lesson, level, question, options, correct, explanation });
+        const mk = mkFor("الدرس الأول: أفعال المقاربة والرجاء والشروع");
+        const mk2 = mkFor("الدرس الثاني: أدوات الشرط الجازمة");
+        const mk3 = mkFor("الدرس الثالث: أدوات الشرط غير الجازمة");
+        const mk4 = mkFor("الدرس الرابع: أحوال المبتدأ والخبر", "lit");
+        const mk5 = mkFor("الدرس الخامس: المصدر المؤول", "lit");
+        const mk6 = mkFor("الدرس السادس: المصدر الميمي", "lit");
+
+        const DEFAULT_QUIZZES = [
+            { id: 1, branch: "sci", lesson: "الدرس الأول: أفعال المقاربة والرجاء والشروع", level: "easy", question: "ما حكم اقتران خبر الفعل (أوشك) بأن المصدرية؟", options: ["يمتنع اقترانه", "يجب اقترانه", "جائز بكثرة", "جائز بقلة"], correct: 2, explanation: "الإجابة الصحيحة هي (جائز بكثرة)؛ لأن الفعلين (أوشك) و(عسى) يكثر اقتران خبرهما بـ (أن) المصدرية وفق القاعدة." },
+            { id: 2, branch: "sci", lesson: "الدرس الأول: أفعال المقاربة والرجاء والشروع", level: "easy", question: "في جملة (شرعَ المعلمُ يشرحُ الدرسَ)، ما حكم اقتران خبر الفعل (شرع) بأن؟", options: ["يمتنع", "يجب", "جائز بكثرة", "جائز بقلة"], correct: 0, explanation: "الإجابة الصحيحة هي (يمتنع)؛ لأن جميع أفعال الشروع (مثل: شرع، بدأ، أخذ، طفق، جعل...) يمتنع اقتران خبرها بـ (أن) وجوباً." },
+            { id: 3, branch: "sci", lesson: "الدرس الثالث: أدوات الشرط غير الجازمة", level: "medium", question: "ما إعراب الاسم الواقع بعد (لولا) في أسلوب الشرط؟", options: ["فاعل مرفوع", "مبتدأ مرفوع خبره محذوف وجوباً", "نائب فاعل", "خبر المقدم"], correct: 1, explanation: "يأتي بعد (لولا) دائماً اسم يُعرب مبتدأ مرفوعاً وخبره محذوف وجوباً تقديره (موجود)." },
+
+            // ===================== المستوى السهل =====================
+            mk("easy", "أيُّ الجمل الآتية جاء فيها الفعل (أَخَذَ) فعلاً ناقصاً (ناسخاً)؟",
+                ["أَخَذَ الفقيرُ الصَّدَقَةَ.", "أخذ خالد أخاه إلى الملعب.", "أخَذَ الطَّالِبُ القلم من صديقه.", "أَخَذَ المُعلِّمُ يَشْرَحُ أَبيات القصيدة."], 3,
+                "الإجابة الصحيحة: (أَخَذَ المُعلِّمُ يَشْرَحُ أَبيات القصيدة). الفعل (أخذ) هنا بمعنى (بدأ) فهو من أفعال الشروع الناسخة؛ اسمه (المعلم) وخبره الجملة الفعلية (يشرح). أما في بقية الجمل فهو فعل تام بمعنى (تناول) له فاعل ومفعول به."),
+            mk("easy", "ما خبر الفعل (تَكَادُ) في الآية الكريمة: (تَكَادُ السَّمَاوَاتُ يَتَفَطَّرْنَ مِنْهُ وَتَنشَقُّ الْأَرْضُ وَتَخِرُّ الْجِبَالُ هَدًّا)؟",
+                ["السَّمَاوَاتُ.", "تنشقّ.", "يَتَفَطَّرْنَ.", "تخرّ."], 2,
+                "اسم (تكاد) هو (السماوات)، وخبرها الجملة الفعلية (يتفطرن) في محل نصب، وفعلها مضارع كما هو شرط خبر هذه الأفعال. أما (تنشق) و(تخر) فمعطوفتان عليه."),
+            mk("easy", "أيُّ الأبيات الآتية تضمّن فعلاً ناسخاً دالاً على الرجاء؟",
+                ["كَرَبَ القلبُ مِنْ جواه يذوب حين قال الوُشاة هند غضوب.", "إِنْ تَقُلْ هُنَّ من بني عبد شمس / فحرى أن يكون ذاك وكانا.", "فأخذتُ أسأل والرسوم تُجيبني وفي الاعتبار إجابة وسؤال.", "فَلَجَّ كَأَنّي كُنْتُ باللوم مُغريا هَبَبْتُ ألوم القلب في طاعة الهوى."], 1,
+                "أفعال الرجاء ثلاثة: (عسى، حرى، اخلولق)، وقد ورد الفعل (حرى) في «فحرى أن يكون». أما (كرب) ففعل مقاربة، و(أخذتُ) و(هببتُ) من أفعال الشروع."),
+            mk("easy", "ما حكم اقتران خبر (عسى) بـ (أنْ) في قوله تعالى: (فَأُوْلَئِكَ عَسَى اللَّهُ أَن يَعْفُوَ عَنْهُمْ)؟",
+                ["واجب.", "ممتنع.", "جائز قليل.", "جائز كثير."], 3,
+                "(عسى) من أفعال الرجاء، والأكثر في خبرها أن يقترن بـ (أن) كما في الآية (أن يعفو)، ويجوز تجرده منها بقلة."),
+            mk("easy", "ما إعراب الفعل (يَكَادُ) في قوله تعالى: (يَكَادُ زَيْتُهَا يُضِيءُ وَلَوْ لَمْ تَمْسَسْهُ نَارٌ)؟",
+                ["فعل ماضٍ مبني على الفتحة الظاهرة.", "فعل مضارع مرفوع وعلامة رفعه الضمة الظاهرة.", "خبر يكاد مرفوع وعلامة رفعه الضمة الظاهرة.", "فاعل مرفوع وعلامة رفعه الضمة الظاهرة."], 1,
+                "(يكاد) فعل مضارع ناقص (ناسخ) مرفوع وعلامة رفعه الضمة الظاهرة؛ واسمه (زيتها) وخبره الجملة الفعلية (يضيء) في محل نصب."),
+            mk("easy", "أيُّ الجمل الآتية حوت فعلاً ناسخاً من أخوات (كاد)؟",
+                ["أخذ محمد الكتاب.", "أخذ اللاعب حذره من الخصم.", "أخذ الطالب يستعد لاختبار اللغة العربية.", "أخذ الرجل المال واشترى به بيتاً جديداً لأسرته."], 2,
+                "(أخذ) في «أخذ الطالب يستعد» بمعنى (بدأ) وهو من أفعال الشروع، وهي من أخوات كاد؛ اسمه (الطالب) وخبره الجملة (يستعد). وفي بقية الجمل هو فعل تام بمعنى (تناول)."),
+            mk("easy", "ما اسم (أكاد) في قوله تعالى: (إِنَّ السَّاعَةَ آتِيَةٌ أَكَادُ أُخْفِيهَا لِتُجْزَى كُلُّ نَفْسٍ بِمَا تَسْعَى)؟",
+                ["اسم ظاهر.", "مصدر مؤول.", "ضمير مستتر.", "جملة فعلية."], 2,
+                "اسم (أكاد) ضمير مستتر وجوباً تقديره (أنا)، وخبرها الجملة الفعلية (أخفيها) في محل نصب."),
+            mk("easy", "أيُّ الجمل الآتية تضمّن فعلاً ناسخاً دالاً على الرجاء؟",
+                ["شرعت الأمطار الغزيرة تهطل بشدة.", "أخذ اللاعبون يتدربون كثيرًا أملاً في الفوز.", "بدأت الحوافز تصرف لتشجيع العاملين.", "حرى الفرقاء أن تتحد كلمتهم لأجل شعوبهم."], 3,
+                "(حرى) من أفعال الرجاء (عسى، حرى، اخلولق)، أما (شرع) و(أخذ) و(بدأ) فمن أفعال الشروع. ووجود كلمة (أملاً) في الخيار الثاني لا يجعل (أخذ) فعل رجاء."),
+            mk("easy", "أيُّ الآيات الكريمة الآتية تضمّنت فعلاً دالاً على الشروع؟",
+                ["يَكَادُ الْبَرْقُ يَخْطَفُ أَبْصَارَهُمْ.", "شَرَعَ لَكُم مِّنَ الدِّينِ مَا وَصَّى بِهِ نُوحًا.", "وَطَفِقَا يَخْصِفَانِ عَلَيْهِمَا مِن وَرَقِ الْجَنَّةِ.", "فَعَسَى اللَّهُ أَن يَأْتِيَ بِالْفَتْحِ أَوْ أَمْرٍ مِّنْ عِندِهِ."], 2,
+                "(طفق) من أفعال الشروع بمعنى (بدأ)، و(يكاد) للمقاربة، و(عسى) للرجاء. أما (شرع) في الخيار الثاني فبمعنى (سنّ) فهو فعل تام."),
+            mk("easy", "ما إعراب الكلمة التي تحتها خط (الفَجْرُ) في قول الشاعر: (لا تخافوا الليلَ يبقى / أَوْشَكَ الفَجْرُ يَلُوحُ)؟",
+                ["نائب فاعل مرفوع وعلامة رفعه الضمة.", "اسم أوشك مرفوع وعلامة رفعه الضمة.", "خبر أوشك مرفوع وعلامة رفعه الضمة.", "فاعل مرفوع وعلامة رفعه الضمة."], 1,
+                "(أوشك) من أفعال المقاربة تعمل عمل (كان)، فـ (الفجر) اسمها مرفوع بالضمة، والجملة الفعلية (يلوح) خبرها في محل نصب."),
+            mk("easy", "ما حكم اقتران (أن) بخبر الفعل الناسخ في قوله تعالى: (إِنَّ السَّاعَةَ آتِيَةٌ أَكَادُ أُخْفِيهَا لِتُجْزَى كُلُّ نَفْسٍ بِمَا تَسْعَى)؟",
+                ["ممتنع.", "واجب.", "جائز بقلة.", "جائز بكثرة."], 2,
+                "(كاد) من أفعال المقاربة، والأكثر في خبرها التجرد من (أن) كما في الآية (أخفيها)، ويقلّ اقترانه بها."),
+            mk("easy", "أيُّ الآيات القرآنية الآتية اشتملت على فعل من أفعال الشروع؟",
+                ["تَكَادُ السَّمَاوَاتُ يَتَفَطَّرْنَ مِنْهُ.", "فَذَبَحُوهَا وَمَا كَادُوا يَفْعَلُونَ.", "وَطَفِقَا يَخْصِفَانِ عَلَيْهِمَا مِنْ وَرَقِ الْجَنَّةِ.", "عَسَى رَبُّكُمْ أَنْ يَرْحَمَكُمْ."], 2,
+                "(طفق) من أفعال الشروع، أما (كاد) فللمقاربة و(عسى) للرجاء."),
+            mk("easy", "ما حكم اقتران خبر الفعل الناسخ بـ (أن) في الحديث الشريف: (يُوشِكُ الأُمَمُ أَنْ تَدَاعَى عَلَيْكُمْ، كَمَا تَدَاعَى الأَكَلَةُ إِلَى قَصْعَتِهَا)؟",
+                ["ممتنع.", "جائز بكثرة.", "جائز بقلة.", "واجب."], 1,
+                "(يوشك) مثل (عسى) يكثر اقتران خبرها بـ (أن) كما في الحديث، ويجوز تجرده منها بقلة."),
+            mk("easy", "ما حكم اقتران (أن) بخبر (عسى) في قوله تعالى: (فَعَسَى اللَّهُ أَن يَأْتِيَ بِالْفَتْحِ أَوْ أَمْرٍ مِّنْ عِندِهِ)؟",
+                ["جائز، ولكنه كثير.", "واجب.", "ممتنع.", "جائز، ولكنه قليل."], 0,
+                "(عسى) يكثر اقتران خبرها بـ (أن) وهو هنا (أن يأتي)، ويجوز تجرده بقلة."),
+            mk("easy", "أيُّ الجمل الآتية اشتملت على فعل من أفعال الشروع؟",
+                ["أخذ الطبيب عينة من الدم؛ لفحصها.", "أَخَذَ الطفل بثوب أُمِّهِ من شدة الخوف.", "أخذَ الطَّالِبُ يُذاكر دروس اللغة العربية.", "أخذ اللاعبون قسطاً من الراحة بعد المباراة."], 2,
+                "(أخذ) في «أخذ الطالب يذاكر» بمعنى (بدأ) فهو ناسخ من أفعال الشروع، وخبره جملة (يذاكر). وفي بقية الجمل هو فعل تام بمعنى (تناول/تمسّك/نال)."),
+            mk("easy", "أيُّ الجمل الآتية اشتملت على فعل من أفعال الشروع؟",
+                ["شرع الحاكم قانوناً جديداً.", "شرع العلماء مبادئ العقيدة.", "شرع القاضي يدرس القضية.", "شرع الصياد السهم تجاه الطريدة."], 2,
+                "(شرع) في «شرع القاضي يدرس القضية» بمعنى (بدأ) فهو ناسخ. أما في بقية الجمل فبمعنى (سنّ / وضع / وجّه) فهو فعل تام له مفعول به."),
+            mk("easy", "أيُّ الآيات الآتية تضمّنت فعلاً ناسخاً دالاً على الشروع؟",
+                ["يَكَادُ الْبَرْقُ يَخْطَفُ أَبْصَارَهُمْ.", "وَطَفِقَا يَخْصِفَانِ عَلَيْهِمَا مِن وَرَقِ الْجَنَّةِ.", "مِن بَعْدِ مَا كَادَ يَزِيغُ قُلُوبُ فَرِيقٍ مِنْهُمْ.", "فَأُوْلَئِكَ عَسَى اللَّهُ أَن يَعْفُوَ عَنْهُمْ وَكَانَ اللَّهُ عَفُوًّا غَفُورًا."], 1,
+                "(طفق) من أفعال الشروع، و(كاد) من أفعال المقاربة، و(عسى) من أفعال الرجاء."),
+            mk("easy", "ما إعراب الكلمة التي تحتها خط (السَّمَاوَاتُ) في قوله تعالى: (تَكَادُ السَّمَاوَاتُ يَتَفَطَّرْنَ مِنْهُ وَتَنشَقُّ الْأَرْضُ)؟",
+                ["فاعل مرفوع وعلامة رفعه الضمة.", "اسم تكاد مرفوع وعلامة رفعه الضمة.", "خبر لمبتدأ محذوف مرفوع وعلامة رفعه الضمة.", "خبر تكاد منصوب."], 1,
+                "(تكاد) فعل ناسخ يرفع الاسم وينصب الخبر، فـ (السماوات) اسمها مرفوع بالضمة وليست فاعلاً، وخبرها الجملة (يتفطرن)."),
+
+            // ===================== المستوى المتوسط =====================
+            mk("medium", "ما إعراب كلمة (أَهْلُ) في الحديث الشريف: (يُوشِكُ أَهْلُ الشَّامِ أَنْ لَا يُجْبَى إِلَيْهِمْ دِينَارٌ وَلَا مُدْيٌ)؟",
+                ["فاعل مرفوع وعلامة رفعه الضمة الظاهرة.", "نائب فاعل مرفوع وعلامة رفعه الضمة الظاهرة.", "اسم (يوشك) مرفوع وعلامة رفعه الضمة الظاهرة.", "خبر (يوشك) مرفوع وعلامة رفعه الضمة الظاهرة."], 2,
+                "(يوشك) من أفعال المقاربة، فهي ترفع الاسم وتنصب الخبر؛ و(أهل) اسمها مرفوع بالضمة، وخبرها المصدر المؤول (أن لا يجبى) في محل نصب."),
+            mk("medium", "ما خبر الفعل (نَكَادُ) في البيت الشعري: (نَكَادُ حِينَ تُنَاجِيكُمْ ضَمَائِرُنَا / يَقْضِي عَلَيْنَا الأَسَى لولا تَأَسِّينَا)؟",
+                ["تأسّينا.", "يقضي.", "ضمائرنا.", "تناجيكم."], 1,
+                "خبر (نكاد) هو الجملة الفعلية (يقضي علينا الأسى) في محل نصب، وفعلها مضارع. أما (ضمائرنا) فهي فاعل للفعل (تناجي)."),
+            mk("medium", "ما خبر الفعل (عَسَى) في قول الشاعر: (وماذا عسى الواشونَ أَن يَتَحَدَّثُوا / سوى أَن يَقُولُوا إِنَّنِي لَكِ عَاشِقُ)؟",
+                ["إِنَّنِي لَكِ عاشِق.", "أن يقولوا.", "أَن يَتَحَدَّثوا.", "الواشون."], 2,
+                "(عسى) فعل رجاء، اسمه (الواشون) وخبره المصدر المؤول (أن يتحدثوا) في محل نصب. أما (أن يقولوا) فواقع بعد (سوى) وليس الخبر."),
+            mk("medium", "ما إعراب الكلمة التي تحتها خط (القَلْبُ) في قول بشار بن برد: (يَكَادُ الْقَلْبُ مِن طَرَبٍ إِلَيْهِمُ / وَمِن فَرْطِ الصَّبَابَةِ يُسْتَطَارُ)؟",
+                ["اسم (كَادَ) مرفوع وعلامة رفعه الضمة الظاهرة.", "خبر (كَادَ) مرفوع وعلامة رفعه الضمة الظاهرة.", "خبر مرفوع وعلامة رفعه الضمة الظاهرة.", "مبتدأ مرفوع وعلامة رفعه الضمة الظاهرة."], 0,
+                "(كاد) ناسخ يرفع الاسم، فـ (القلب) اسمها مرفوع بالضمة، وخبرها الجملة الفعلية (يستطار) في محل نصب."),
+            mk("medium", "ميّز الجملة التي تحتوي على فعل من أفعال الشروع.",
+                ["بدأت القصيدة باستهلال رائع جذب انتباه المستمعين.", "بدأت الأبحاث العلمية بتوظيف الطاقة والتكنولوجيا.", "أخذت الصناعة تتطور وتتقدم بسرعة كبيرة.", "أخذت المرأة كثيرًا من حقوقها في العصر الحديث."], 2,
+                "(أخذت) في «أخذت الصناعة تتطور» بمعنى (بدأت)، اسمها (الصناعة) وخبرها الجملة (تتطور). أما (بدأت) في الجملتين الأوليين فتامة تعدّت بالباء، و(أخذت) في الأخيرة بمعنى (نالت)."),
+            mk("medium", "أيُّ الجمل الآتية جاء فيها الفعل (أَخَذَ) فعلاً ناسخاً يفيد الشروع؟",
+                ["أَخَذَ جَمَالُ الطَّبِيعَةِ قُلُوبَ النَّاظِرِينَ.", "أَخَذَ الْمُؤْمِنُ عَلَى عَاتِقِهِ فِعْلَ الخَيْرَاتِ.", "أَخَذَ النَّاسُ يَهْتَمُّونَ بِإِحْيَاءِ تُرَاثِ الْأَجْدَادِ.", "أَخَذَ المُتَصَدِّقُونَ الثَّوابَ مِنَ اللَّهِ عَزَّ وَجَلَّ."], 2,
+                "(أخذ الناس يهتمون) فيها (أخذ) بمعنى (بدأ) واسمه (الناس) وخبره الجملة (يهتمون). وفي غيرها هو فعل تام له مفعول به."),
+            mk("medium", "ما حكم اقتران (أن) بالفعل المضارع في خبر (يكاد) في قوله تعالى: (يَكَادُ الْبَرْقُ يَخْطَفُ أَبْصَارَهُمْ)؟",
+                ["جائز بقلة.", "واجب.", "جائز بكثرة.", "ممتنع."], 0,
+                "خبر (كاد) الأكثر فيه التجرد من (أن) كما في الآية (يخطف)، ويقلّ اقترانه بها."),
+            mk("medium", "أيُّ الجمل الآتية تضمّنت فعلاً يقلُّ اقتران خبره بـ (أنْ)؟",
+                ["عسى فلسطينُ أن تعود.", "اخلولق النصرُ أن يأتيَ.", "أوشك البطلُ أن ينتصرَ.", "كَرَبَ المقاومُ أن يهزمَ العدوَّ."], 3,
+                "يقلّ اقتران الخبر بـ (أن) مع (كاد) و(كرب)؛ أما (عسى) و(أوشك) فيكثر، و(اخلولق) يجب."),
+            mk("medium", "حَرَى الأَطِبَّاءُ ................ فِي القَوَافِلِ الطبية. أيُّ مِمَّا يَأْتِي مُنَاسِبٌ لمَلْءِ الفَرَاغِ؟",
+                ["مُشَارِكِينَ.", "أَنْ يُشَارِكُوا.", "يُشَارِكُونَ.", "مُشَارِكُونَ."], 1,
+                "(حرى) من أفعال الرجاء، ويجب اقتران خبرها بـ (أن)، وخبرها فعل مضارع؛ فالمناسب (أن يشاركوا)."),
+            mk("medium", "أيُّ الآيات الآتية اشتملت على فعل من أفعال المقاربة؟",
+                ["إِنَّهُمْ يَكِيدُونَ كَيْدًا.", "كَذَلِكَ كِدْنَا لِيُوسُفَ.", "وَتَاللَّهِ لَأَكِيدَنَّ أَصْنَامَكُمْ.", "يَكَادُ سَنَا بَرْقِهِ يَذْهَبُ بِالْأَبْصَارِ."], 3,
+                "(يكاد) في الآية الأخيرة من أفعال المقاربة. أما الأفعال في بقية الآيات فمن (الكيد) بمعنى المكر والتدبير، وهي أفعال تامة."),
+            mk("medium", "ما حكم اقتران (أن) بخبر (كَرَبَ) في قول الشاعر: (كَرَبَ القلبُ مِنْ جواه يذوب / حين قال الوشاة هند غضوب)؟",
+                ["واجب.", "ممتنع.", "جائز، ولكنه قليل.", "جائز، ولكنه كثير."], 2,
+                "(كرب) من أفعال المقاربة كـ (كاد)، يقلّ اقتران خبرها بـ (أن)، وقد جاء هنا مجرداً (يذوب)."),
+            mk("medium", "أيُّ الجمل الآتية جاء فيها حكم اقتران خبر الفعل الناسخ بـ (أن) واجباً؟",
+                ["اخْلَوْلَقَ المطرُ أن ينزل.", "عسى المعلمُ أن يعيد الدرس.", "كَرَبَ اللاعبُ أَنْ يَفُوزَ بالجائزة.", "أوْشَكَ البَطَلُ أَنْ يَفُوزَ بِالجَائِزَةِ الأُولى."], 0,
+                "يجب اقتران خبر (اخلولق) و(حرى) بـ (أن)، ويكثر مع (عسى) و(أوشك)، ويقلّ مع (كرب) و(كاد)."),
+            mk("medium", "أيُّ الجمل الآتية جاء فيها حكم اقتران خبر الفعل الناسخ بـ (أن) واجباً؟",
+                ["يوشك المطرُ أن ينهمر.", "حرى الفرجُ أن يكون قريباً.", "كاد المعلمُ أن يكون رسولاً.", "عسى اللهُ أن يغفر لي ذنوبي."], 1,
+                "(حرى) يجب اقتران خبرها بـ (أن). أما (يوشك) و(عسى) فيكثر، و(كاد) يقلّ."),
+            mk("medium", "أيُّ الجمل الآتية جاء فيها حكم اقتران خبر الفعل الناسخ بـ (أن) ممتنعاً؟",
+                ["عسى الكربُ ينفرج.", "يوشك الامتحانُ يبدأ.", "شَرَعَ الطَّالبُ يقرأ الدرس.", "يكاد المطرُ يغرق المكان."], 2,
+                "يمتنع اقتران خبر أفعال الشروع بـ (أن) مثل (شرع). أما (عسى) و(يوشك) فيجوز في خبرهما التجرد والاقتران، و(كاد) يقلّ اقتران خبرها."),
+            mk("medium", "حَرَى الغُمَّةُ ............. أيُّ مما يأتي مناسب لملء الفراغ السابق؟",
+                ["مُنْكَشِفَةً.", "مُنْكَشِفَةٌ.", "تَنْكَشِفُ.", "أَنْ تَنْكَشِفَ."], 3,
+                "(حرى) من أفعال الرجاء، ويجب اقتران خبرها بـ (أن) ويكون جملة فعلية فعلها مضارع، فالصواب (أن تنكشف)."),
+            mk("medium", "بَدَأَ كُلُّ مُعَلِّمٍ ............. وَاجِبَاتِ طُلَّابِهِ. أيُّ مما يأتي مناسب لملء الفراغ السابق؟",
+                ["يُتَابِعُ.", "مُتَابِعٌ.", "مُتَابِعًا.", "أَنْ يُتَابِعَ."], 0,
+                "(بدأ) من أفعال الشروع، وخبرها يكون جملة فعلية فعلها مضارع ويمتنع اقترانه بـ (أن)؛ فالصواب (يتابع)."),
+
+            // ===================== المستوى الصعب =====================
+            mk("hard", "حدد اسم الفعل الناسخ (يُوشِكُ) في البيت: (يُوشِكُ مَنْ فَرَّ مِنْ مَنِيَّتِهِ / فِي بَعْضِ غِرَّاتِهِ يُوَافِقُهَا)",
+                ["مَنْ.", "مِنْ.", "مَنِيَّتِهِ.", "ضمير مستتر."], 0,
+                "(مَنْ) اسم موصول مبني في محل رفع اسم (يوشك)، وصلته الجملة (فرّ من منيته)، وخبر (يوشك) الجملة الفعلية (يوافقها) في محل نصب."),
+            mk("hard", "أيُّ الأبيات الآتية جاء فيه الفعل (قَامَ) فعلاً من أفعال الشروع؟",
+                ["فلما قام سيف الله فيهم فانشق بالشوق عنه قلبي.", "إذا قائم في القوم قامَ بِخُطَّة زياد قام أبلج مستنير.", "فقام يسعى ويستميح أقاموا جميعاً ثم صاحوا وأَجْلَبوا.", "إذا سيد منا خلا قام سيد قؤول لما قال الكرام فعول."], 2,
+                "في «فقام يسعى» جاء (قام) بمعنى (بدأ وأخذ) فهو ناسخ من أفعال الشروع وخبره الجملة (يسعى). أما في بقية الأبيات فمعناه النهوض أو الظهور فهو فعل تام."),
+            mk("hard", "ما إعراب الكلمة التي تحتها خط (اللَّاعِبُونَ) في الجملة: (شَرَعَ اللَّاعِبُونَ يَتَدَرَّبُونَ)؟",
+                ["اسم (شَرَعَ) مرفوع وعلامة الرفع الواو.", "اسم (شَرَعَ) مرفوع وعلامة الرفع الضمة الظاهرة.", "خبر مرفوع وعلامة الرفع الواو.", "مبتدأ مرفوع وعلامة الرفع الواو."], 0,
+                "(شرع) هنا ناسخ بمعنى (بدأ)، و(اللاعبون) اسمه، وهو جمع مذكر سالم يرفع بالواو نيابة عن الضمة. وخبره الجملة (يتدربون) في محل نصب."),
+            mk("hard", "ما إعراب الكلمة التي تحتها خط (الواشونَ) في الجملة: (وماذا عسى الواشونَ أَن يَتَحَدَّثُوا / سوى أَن يَقُولُوا إِنَّنِي لَكِ عَاشِقُ)؟",
+                ["مبتدأ مرفوع وعلامة الرفع الواو.", "خبر مرفوع وعلامة الرفع الواو.", "اسم (عسى) مرفوع وعلامة الرفع الواو.", "اسم (عسى) مرفوع وعلامة الرفع الضمة الظاهرة."], 2,
+                "(الواشون) اسم (عسى) وهو جمع مذكر سالم يرفع بالواو نيابة عن الضمة، وخبرها المصدر المؤول (أن يتحدثوا)."),
+            mk("hard", "ما حكم اقتران خبر الفعلين (نَكَادُ، عَسَى) بـ (أن) على الترتيب في: (نَكَادُ نَقْرَأُ لِلْأُدَبَاءِ مَا عَدَا الكَاذِبَ مِنْهُمْ، فَعَسَى المَقْرُوءُ يَكُونُ مُفِيدًا)؟",
+                ["جائز بقلة، وواجب.", "جائز بقلة، وجائز بكثرة.", "واجب، وجائز بكثرة.", "ممتنع، وجائز بقلة."], 1,
+                "(كاد) يقلّ اقتران خبرها بـ (أن)، و(عسى) يكثر اقتران خبرها بها (ويجوز تجرده كما في الجملة)."),
+            mk("hard", "ما إعراب الكلمة التي تحتها خط (القُرَى) في: (تُوشِكُ القُرَى أَنْ تَخْرَبَ وَهِيَ عَامِرَةٌ)؟",
+                ["خبر توشك منصوب وعلامة نصبه الفتحة المقدرة.", "اسم توشك مرفوع وعلامة رفعه الضمة المقدرة.", "فاعل مرفوع وعلامة رفعه الضمة المقدرة.", "مبتدأ مرفوع وعلامة رفعه الضمة المقدرة."], 1,
+                "(القرى) اسم مقصور تقدَّر عليه الضمة للتعذر، وهو اسم (توشك)، وخبرها المصدر المؤول (أن تخرب) في محل نصب."),
+            mk("hard", "ما حكم اقتران خبر كلٍّ من (كَادَتْ، أَخَذَ) بـ (أنْ) على الترتيب في العبارة: (كَادَتْ بُطُولَةُ الْمُنَاظَرَاتِ تَنْطَلِقُ، وَأَخَذَ الْمُتَنَاظِرُونَ يَسْتَعِدُّونَ فِي حَمَاسٍ)؟",
+                ["جائز، جائز.", "جائز، ممتنع.", "واجب، جائز.", "ممتنع، جائز."], 1,
+                "(كاد) يجوز اقتران خبرها بـ (أن) على قلة، و(أخذ) من أفعال الشروع فيمتنع اقتران خبرها بـ (أن)."),
+            mk("hard", "ما اسم فعل المقاربة في قوله تعالى: (وَجَدَ مِنْ دُونِهِمَا قَوْمًا لَا يَكَادُونَ يَفْقَهُونَ قَوْلًا)؟",
+                ["يفقهون.", "ضمير مستتر.", "ضمير متصل.", "قولاً."], 2,
+                "اسم (يكادون) هو واو الجماعة، وهي ضمير متصل مبني في محل رفع، وخبرها الجملة الفعلية (يفقهون) في محل نصب."),
+            mk("hard", "أيُّ الأبياتِ الآتيةِ تضمّن فعلاً يقلُّ اقتران خبره بـ (أنْ)؟",
+                ["دَعِيْنِي، أَطَلَّ عَلَيَّ الصَّبَاحُ ومَا زِلْتُ فِي أُرَقِي مُوْجَعًا.", "دَعِيْنِي أَنَمْ لَحْظَةً يَا هُمُومُ فَقَدْ أَوْشَكَ الْفَجْرُ أَنْ يَطْلِعَا.", "وَكادَ الصَّبَاحُ يَشُقُّ الدُّجَى وَلَمْ يَأْذَنِ القلبُ أَنْ أَهْجَعَا.", "دَعِينِي دَعِينِي أَنَمْ غَفْوَةً عَسَى أَجِدُ الْحُلْمَ الْمُمْتِعَا."], 2,
+                "(كاد) في «وكاد الصباح يشق» يقلّ اقتران خبرها بـ (أن). أما (أوشك) و(عسى) فيكثر اقتران خبرهما بها، و(أطلّ) في البيت الأول فعل تام."),
+            mk("hard", "ما حكم اقتران خبر كلٍّ من (اخلولق، أوشك) بـ (أن) في العبارة: (اخْلَوْلَقَ السُّكُوتُ أَنْ يَكُونَ جَوَابًا وَأَوْشَكَ الرَّأْيُ أَنْ يَكُونَ مَشُورَةً)؟",
+                ["جائز، جائز.", "واجب، ممتنع.", "جائز، ممتنع.", "واجب، جائز."], 3,
+                "يجب اقتران خبر (اخلولق) بـ (أن)، ويجوز في خبر (أوشك) الاقتران بها والتجرد (والاقتران أكثر)."),
+            mk("hard", "أيُّ الجمل الآتية اشتملت على فعل من أفعال المقاربة؟",
+                ["كَرَبَ المطرُ أن يتوقف.", "كَرَبَ خالداً فراقُ أصحابه.", "كَرَبَ الصيادُ حبلَ السفينة.", "كَرَبَ الفلاحُ الأرضَ؛ ليزرعها."], 0,
+                "(كرب) في «كرب المطر أن يتوقف» بمعنى (قارب) فهو ناسخ، اسمه (المطر) وخبره (أن يتوقف). وفي بقية الجمل هو فعل تام: بمعنى أحزنَ، أو شدَّ الحبل، أو قلبَ الأرض بالحفر."),
+            mk("hard", "أيُّ الأبيات الآتية جاء فيها الفعل (أخذ) دالاً على الشروع؟",
+                ["فأخذتُ أسأل والرسوم تُجيبني / وفي الاعتبار إجابة وسؤال.", "فلو استطعتُ أخذتُ علة جسمه / فقرنتها مني بعلة حالي.", "أخذتُ عن التجارب كل فعل / جميل يكسب الإنسان زينا.", "خذي من رِزْقِ رَبِّكَ غَيْرَ بَسل / كما أَخَذَت مِنَ المرعى الوحوش."], 0,
+                "في «فأخذتُ أسأل» جاء (أخذ) بمعنى (بدأ) فهو ناسخ من أفعال الشروع وخبره الجملة (أسأل). وفي بقية الأبيات هو فعل تام بمعنى (تناول/اكتسب)."),
+            mk("hard", "أيُّ الجمل الآتية جاء فيها حكم اقتران خبر الفعل الناسخ بـ (أنْ) ممتنعاً؟",
+                ["وبتعجيل حاجتي ربي فامْنُنْ / وستوكَ قَدْ كَرَبَتْ تَكْمُلُ.", "كَرَبَ القلبُ مِنْ جواه يذوب / حين قال الوشاة هند غضوب.", "فأخذتُ أسأل والرسوم تُجيبني / وفي الاعتبار إجابة وسؤال.", "وما أنتِ أم ما رسوم الديار / فإليها يكادُ قَلْبِي يطير."], 2,
+                "يمتنع اقتران الخبر بـ (أن) مع أفعال الشروع، ومنها (أخذ) في «فأخذتُ أسأل». أما (كرب) و(كاد) في بقية الأبيات فيقلّ اقتران خبرهما بها ولا يمتنع."),
+            mk("hard", "أيُّ الآيات الآتية جاء فيها حكم اقتران خبر الفعل الناسخ بـ (أنْ) ممتنعاً؟",
+                ["يَكَادُ الْبَرْقُ يَخْطَفُ أَبْصَارَهُمْ.", "وَطَفِقَا يَخْصِفَانِ عَلَيْهِمَا مِن وَرَقِ الْجَنَّةِ.", "مِن بَعْدِ مَا كَادَ يَزِيغُ قُلُوبُ فَرِيقٍ مِنْهُمْ.", "تَكَادُ السَّمَاوَاتُ يَتَفَطَّرْنَ مِنْهُ وَتَنشَقُّ الْأَرْضُ."], 1,
+                "(طفق) من أفعال الشروع فيمتنع اقتران خبرها بـ (أن). أما (كاد) في بقية الآيات فيقلّ اقتران خبرها بها ولا يمتنع."),
+            mk("hard", "أيُّ مما يأتي اسم الفعل الناقص (طَفِقَ) في قوله تعالى: (وَطَفِقَا يَخْصِفَانِ عَلَيْهِمَا مِن وَرَقِ الْجَنَّةِ)؟",
+                ["ورق.", "الجنة.", "يخصفان.", "الألف في (طفقا)."], 3,
+                "ألف الاثنين في (طفقا) ضمير متصل مبني في محل رفع اسم (طفق)، وجملة (يخصفان) في محل نصب خبرها."),
+
+            // ===================== الدرس الثاني: أدوات الشرط الجازمة (للفرعين) =====================
+            mk2("easy", "أيُّ الأبياتِ الآتيةِ تضمَّنَ أسلوبَ شرطٍ؟",
+                ["مَنْ ذا الَّذي يَحمِلُ شَجْوَ الهوى / مَنْ ذا الَّذي يَجرَعُ مُرَّ القضا", "تَلَفَّتُّ أَيْنَ الرَّوْضُ أينَ مكانُهُ / وأَيْنَ مَجالِيهِ وأَيْنَ بَواكِرُهْ", "مَتى رَضينا مِثلَ هذي الحالِ / مَتى مَدَدْنا الكَفَّ لِلسُّؤالِ", "أنا ابنُ جَلا وطَلَّاعُ الثَّنايا / مَتى أَضَعِ العِمامَةَ تَعرِفُوني"], 3,
+                "في الشطر الأخير (متى) أداة شرط جازمة: فعل الشرط (أضع) وجوابه (تعرفوني). أما الأبيات الأخرى ففيها (من، أين، متى) للاستفهام."),
+            mk2("easy", "ما نوع جملة جواب الشرط في قوله تعالى: (مَا نَنسَخْ مِنْ آيَةٍ أَوْ نُنسِهَا نَأْتِ بِخَيْرٍ مِّنْهَا أَوْ مِثْلِهَا)؟",
+                ["جملة فعلية فعلها جامد.", "جملة فعلية فعلها طلبي.", "جملة فعلية فعلها مضارع.", "جملة فعلية فعلها ماضٍ."], 2,
+                "جواب الشرط (نأتِ بخير منها) جملة فعلية فعلها مضارع مجزوم بحذف حرف العلة، ولذلك لا تقترن بالفاء."),
+            mk2("medium", "أيُّ الأبياتِ الآتيةِ تضمَّنَ أداةَ شرطٍ جازمةً (ما)؟",
+                ["ما أجمَلَ الصُّلاحَ مِنكُمْ خَلَّةً / ما أبشَعَ الظُّلَّامَ مِنكُمْ فِعْلَةً", "رأيتُكَ تُنجِزُ ما لَمْ تَعِدْ / وفاءً وتَفعَلُ ما لَمْ تَقُلْ", "ما تَفعَلُ النَّفسُ النَّفيسةُ عندَما / تتهاجَرُ الأرواحُ والأجسادُ", "ما يَشَأْ رَبُّكَ يَفعَلْ قادِرًا / جَلَّ عن كُلِّ مَقالٍ واعتِراضِ"], 3,
+                "في الأخير (ما) شرطية: فعل الشرط (يشأ) وجوابه (يفعل) وكلاهما مجزوم. أما (ما) في الأول فتعجبية، وفي الثاني اسم موصول، وفي الثالث استفهامية."),
+            mk2("medium", "ما علامة جزم فعل الشرط (تأتنا) في قوله تعالى: (وَقَالُوا مَهْمَا تَأْتِنَا بِهِ مِنْ آيَةٍ لِّتَسْحَرَنَا بِهَا فَمَا نَحْنُ لَكَ بِمُؤْمِنِينَ)؟",
+                ["الفتحة.", "السكون.", "حذف النون.", "حذف حرف العلة."], 3,
+                "(تأتي) فعل مضارع معتل الآخر بالياء، فإذا جُزم حُذفت ياؤه، فعلامة جزمه حذف حرف العلة."),
+            mk2("hard", "اقترن جواب الشرط بالفاء وجوباً في البيت: (فَمَنْ أَطَاعَ أَطَاعَ اللَّهُ خَالِقَهُ / وَمَنْ عَصَاكَ فَبِئْسَ العَزْمُ مَا اعْتَزَمَا)؛ لأنَّ جواب الشرط:",
+                ["جملة اسمية.", "جملة فعلية فعلها طلبي.", "جملة فعلية فعلها جامد.", "جملة فعلية مسبوقة بأداة نفي."], 2,
+                "جواب (من عصاك) هو (بئس العزم)، وفعله (بئس) جامد، والجملة التي فعلها جامد يجب اقترانها بالفاء إذا وقعت جواباً للشرط الجازم."),
+
+            mk2("easy", "متى تأتِه تعشو إلى ضوء ناره / تجد خير نار عندها خير موقد. أيُّ مما يأتي جواب الشرط؟", ["تأته.", "تعشو.", "ناره.", "تجد."], 3,
+                "فعل الشرط (تأته) وجوابه (تجد)؛ أما (تعشو) فحال أو جملة تابعة."),
+            mk2("easy", "(وَقَالُوا مَهْمَا تَأْتِنَا بِهِ مِنْ آيَةٍ لِّتَسْحَرَنَا بِهَا). أيُّ مما يأتي فعل الشرط؟", ["قالوا.", "تأتنا.", "تسحرنا.", "بمؤمنين."], 1,
+                "(مهما) أداة شرط جازمة، وفعل الشرط بعدها مباشرة هو (تأتنا)."),
+            mk2("medium", "ما علامة جزم فعلي الشرط والجواب في قوله تعالى: (فَمَن يَعْمَلْ مِثْقَالَ ذَرَّةٍ خَيْرًا يَرَهُ)؟",
+                ["حذف النون - السكون.", "السكون - حذف حرف العلة.", "حذف حرف العلة - السكون.", "حذف النون - حذف حرف العلة."], 1,
+                "(يعمل) صحيح الآخر فجزمه بالسكون، و(يرى) معتل الآخر فجزمه بحذف حرف العلة (الألف)."),
+            mk3("medium", "(كُلَّمَا أَحْكَمُوا بِأَرْضِكَ فَنًّا / مِنْ فِخَاخِ الدَّهَاءِ خَابُوا وَخَابَا). أيُّ مما يأتي جواب الشرط؟", ["أحكموا.", "بأرضك.", "خابوا.", "خابا."], 2,
+                "فعل الشرط (أحكموا) وجوابه (خابوا)."),
+
+            // ===================== الدرس الثالث: أدوات الشرط غير الجازمة (للفرعين) =====================
+            mk3("easy", "أيُّ الآيات الآتية تضمَّنتْ حرفَ شرطٍ غيرَ جازمٍ؟",
+                ["وَلَوْلَا فَضْلُ اللَّهِ عَلَيْكُمْ وَرَحْمَتُهُ لَاتَّبَعْتُمُ الشَّيْطَانَ إِلَّا قَلِيلًا.", "الَّذِينَ إِذَا أَصَابَتْهُم مُّصِيبَةٌ قَالُوا إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ.", "كُلَّمَا أَوْقَدُوا نَارًا لِّلْحَرْبِ أَطْفَأَهَا اللَّهُ.", "وَإِذَا قِيلَ لَهُمُ اتَّبِعُوا مَا أَنزَلَ اللَّهُ قَالُوا بَلْ نَتَّبِعُ مَا أَلْفَيْنَا عَلَيْهِ آبَاءَنَا."], 0,
+                "(لولا) حرف شرط غير جازم. أما (إذا) و(كلما) فظرفا زمان يتضمنان معنى الشرط (أسماء شرط غير جازمة)."),
+            mk3("easy", "ما المعنى الذي أفادته أداة الشرط (لولا) في قوله تعالى: (وَلَوْلَا فَضْلُ اللَّهِ عَلَيْكُمْ وَرَحْمَتُهُ لَاتَّبَعْتُمُ الشَّيْطَانَ إِلَّا قَلِيلًا)؟",
+                ["امتناع لوجود.", "امتناع لامتناع.", "ظرف للزمان الماضي.", "ظرف للزمان المستقبل."], 0,
+                "تفيد (لولا) امتناع حدوث الجواب لوجود الشرط: امتنع اتباع الشيطان لوجود فضل الله ورحمته."),
+            mk3("medium", "ما المعنى الذي أفادته أداة الشرط (لو) في الحديث الشريف: (... فَيَقُولُ: لَوْ أُوتِيتُ مِثْلَ مَا أُوتِيَ هَذَا لَفَعَلْتُ كَمَا يَفْعَلُ)؟",
+                ["امتناع لوجود.", "امتناع لامتناع.", "ظرف للزمان الماضي.", "ظرف للزمان المستقبل."], 1,
+                "تفيد (لو) امتناع الجواب لامتناع الشرط: لم يفعل مثله لأنه لم يُؤتَ مثل ما أوتي."),
+            mk3("medium", "ما جواب الشرط في البيت: (لَوْلَا الحَيَاءُ لَعَادَنِي اسْتِعْبَارُ / وَلَزُرْتُ قَبْرَكَ وَالحَبِيبُ يُزَارُ)؟",
+                ["الحياء.", "لعادني.", "استعبار.", "يزار."], 1,
+                "جواب (لولا) جملة (لعادني استعبار) وقد اقترنت باللام؛ أما (الحياء) فمبتدأ بعد لولا خبره محذوف."),
+            mk3("hard", "ما الإعراب الصحيح لأداة الشرط (كلَّما) في قوله تعالى: (وَكُلَّمَا مَرَّ عَلَيْهِ مَلَأٌ مِّن قَوْمِهِ سَخِرُوا مِنْهُ)؟",
+                ["حرف شرط مبني على السكون في محل رفع فاعل.", "حرف شرط مبني على السكون لا محل له من الإعراب.", "اسم شرط مبني على السكون في محل رفع نائب فاعل.", "اسم شرط مبني على السكون في محل نصب مفعول فيه ظرف زمان."], 3,
+                "(كلما) ظرف زمان يتضمن معنى الشرط، فهو اسم شرط غير جازم مبني في محل نصب مفعول فيه."),
+            mk3("hard", "ما إعراب الكلمة التي تحتها خط (نِعْمَةُ) في قوله تعالى: (لَوْلَا نِعْمَةُ رَبِّي لَكُنتُ مِنَ الْمُحْضَرِينَ)؟",
+                ["مبتدأ مرفوع، وخبره محذوف، وعلامة رفعه الضمة.", "فاعل مرفوع لفعل محذوف، وعلامة رفعه الضمة.", "نائب فاعل مرفوع لفعل محذوف، وعلامة رفعه الضمة.", "خبر لمبتدأ محذوف مرفوع، وعلامة رفعه الضمة."], 0,
+                "الاسم الواقع بعد (لولا) يُعرب مبتدأ مرفوعاً وخبره محذوف وجوباً تقديره (موجودة)."),
+
+            // ===================== الدرس الرابع: أحوال المبتدأ والخبر (الأدبي) =====================
+            mk4("easy", "أيُّ الآيات الآتية جاء فيها المبتدأ اسماً ظاهراً؟",
+                ["فَهُمْ عَلَىٰ آثَارِهِمْ يُهْرَعُونَ.", "هُوَ الَّذِي خَلَقَ لَكُم مَّا فِي الْأَرْضِ جَمِيعًا.", "لَا شَرِيكَ لَهُ وَبِذَٰلِكَ أُمِرْتُ وَأَنَا أَوَّلُ الْمُسْلِمِينَ.", "مُّحَمَّدٌ رَّسُولُ اللَّهِ وَالَّذِينَ مَعَهُ أَشِدَّاءُ عَلَى الْكُفَّارِ."], 3,
+                "المبتدأ في الآية الأخيرة (محمدٌ) اسم ظاهر. أما في الآيات الأخرى فالمبتدأ ضمير منفصل (هم، هو، أنا)."),
+            mk4("easy", "(الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ). ما نوع الخبر في الآية السابقة؟",
+                ["مفرد.", "شبه جملة.", "جملة فعلية.", "جملة اسمية."], 1,
+                "الخبر هو (لله) جار ومجرور، فهو شبه جملة في محل رفع خبر المبتدأ (الحمد)."),
+            mk4("medium", "أيُّ الجمل الآتية جاء فيها الخبر شبه جملة؟",
+                ["العلمُ يرفعُ صاحبَه.", "جمالُ المرأةِ في خُلُقِها.", "الحياءُ شطرُ الإيمانِ.", "الصحراءُ منظرُها جميلٌ."], 1,
+                "في (جمالُ المرأةِ في خُلُقِها) الخبر (في خلقها) جار ومجرور. وفي الأولى الخبر جملة فعلية، وفي الثالثة مفرد (شطر)، وفي الرابعة جملة اسمية."),
+            mk4("medium", "ما الإعراب الصحيح للكلمة التي تحتها خط (غِشَاوَةٌ) في قوله تعالى: (وَعَلَىٰ أَبْصَارِهِمْ غِشَاوَةٌ)؟",
+                ["فاعل مرفوع.", "صفة مرفوعة.", "مبتدأ مؤخر مرفوع.", "خبر لمبتدأ محذوف."], 2,
+                "(غشاوة) مبتدأ مؤخر، وخبره شبه الجملة (على أبصارهم) مقدم؛ لأن المبتدأ نكرة والخبر شبه جملة."),
+            mk4("hard", "أيُّ الآيات الآتية يجب فيها تقديم الخبر على المبتدأ؟",
+                ["وَلِلَّهِ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ.", "أَفَلَا يَتَدَبَّرُونَ الْقُرْآنَ أَمْ عَلَىٰ قُلُوبٍ أَقْفَالُهَا.", "فَصَبْرٌ جَمِيلٌ وَاللَّهُ الْمُسْتَعَانُ عَلَىٰ مَا تَصِفُونَ.", "وَبِذَٰلِكَ أُمِرْتُ وَأَنَا أَوَّلُ الْمُسْلِمِينَ."], 1,
+                "في (على قلوب أقفالها) الخبر شبه جملة مقدم وجوباً؛ لأن المبتدأ (أقفالها) اشتمل على ضمير يعود على جزء من الخبر (قلوب)."),
+            mk4("hard", "ما الإعراب الصحيح للكلمة التي تحتها خط (فَضْلُ) في قوله تعالى: (فَلَوْلَا فَضْلُ اللَّهِ عَلَيْكُمْ وَرَحْمَتُهُ لَكُنتُم مِّنَ الْخَاسِرِينَ)؟",
+                ["فاعل مرفوع.", "صفة مرفوعة.", "مبتدأ خبره محذوف.", "خبر لمبتدأ محذوف."], 2,
+                "الاسم الواقع بعد (لولا) مبتدأ مرفوع وخبره محذوف وجوباً تقديره (موجود)."),
+
+            // ===================== الدرس الخامس: المصدر المؤول (الأدبي) =====================
+            mk5("easy", "أيُّ الآيات الآتية تضمَّنتْ (أَنْ) المصدرية؟",
+                ["إِنَّ اللَّهَ لَذُو فَضْلٍ عَلَى النَّاسِ.", "وَإِنْ عَزَمُوا الطَّلَاقَ فَإِنَّ اللَّهَ سَمِيعٌ عَلِيمٌ.", "وَقَاتِلُوا فِي سَبِيلِ اللَّهِ وَاعْلَمُوا أَنَّ اللَّهَ سَمِيعٌ عَلِيمٌ.", "لَا الشَّمْسُ يَنبَغِي لَهَا أَن تُدْرِكَ الْقَمَرَ."], 3,
+                "(أن) في الآية الأخيرة حرف مصدري ناصب يدخل على المضارع (تدرك)، ويكوّن معه مصدراً مؤولاً. أما (إنّ) و(أنّ) فمن أخوات إنّ، و(إنْ) في الثانية شرطية."),
+            mk5("easy", "ما المصدر الصريح من المصدر المؤول في الجملة: (أَتَمَنَّى أَنْ أُقَابِلَ مَشَاهِيرَ العُلَمَاءِ)؟",
+                ["قبول.", "إقبال.", "تقابل.", "مقابلة."], 3,
+                "المصدر المؤول (أن أقابل) يُؤوَّل بالمصدر الصريح (مقابلة) من الفعل (قابل)."),
+            mk5("medium", "أيُّ الأبياتِ الآتيةِ تضمَّنَ مصدراً مؤولاً؟",
+                ["أأخي إنَّ المالَ إنْ قدَّمتَهُ / لكَ ليسَ إنْ خلَّفتَهُ لكَ مالا", "فإنَّكَ إنْ هَجَوتَ هَجَوتَ لَيثًا / وإنِّي إنْ هَجَوتُ هَجَوتُ كَلبا", "تَبكي الحمامةُ إنْ بَكى / وتَئِنُّ فوقَ الغُصنِ إنْ أَنَّ", "قد آنَ أنْ يُوصَلَ الحبلُ الذي قَطَعوا / لو آنَ أنْ يُفعَلَ الشيءُ الذي حانا"], 3,
+                "في البيت الأخير (أن يوصل) و(أن يفعل) أنْ المصدرية مع الفعل المضارع، فهما مصدران مؤولان. أما (إنْ) في الأبيات الأخرى فشرطية."),
+            mk5("medium", "ما المصدر الصريح من المصدر المؤول في قوله تعالى: (إِنِّي أَخَافُ أَن يُبَدِّلَ دِينَكُمْ)؟",
+                ["بَدَل.", "إبدال.", "تبديل.", "مبادلة."], 2,
+                "المصدر المؤول (أن يبدل) يُؤوَّل بالمصدر الصريح (تبديل) من الفعل (بدَّل)."),
+            mk5("hard", "ما موقع المصدر المؤول من (أن يوصل) في قول الشاعر: (قد آنَ أنْ يُوصَلَ الحبلُ الذي قَطَعوا)؟",
+                ["رفع فاعل.", "رفع مبتدأ.", "جر بالإضافة.", "نصب مفعول به."], 0,
+                "(آن) فعل ماضٍ تام، والمصدر المؤول (أن يوصل) في محل رفع فاعل له، والتقدير: قد آنَ وصلُ الحبل."),
+            mk5("hard", "ما موقع المصدر المؤول من (ما صبروا) في قوله تعالى: (وَجَزَاهُم بِمَا صَبَرُوا جَنَّةً وَحَرِيرًا)؟",
+                ["رفع فاعل.", "رفع مبتدأ.", "نصب مفعول به.", "جر بحرف الجر."], 3,
+                "(ما) مصدرية، والمصدر المؤول (صبرهم) مجرور بالباء، والتقدير: جزاهم بصبرهم."),
+
+            // ===================== الدرس السادس: المصدر الميمي (الأدبي) =====================
+            mk6("easy", "أيُّ الآيات الآتية اشتملتْ على مصدر ميمي؟",
+                ["كِتَابٌ أَنزَلْنَاهُ إِلَيْكَ مُبَارَكٌ.", "مُّذَبْذَبِينَ بَيْنَ ذَٰلِكَ.", "وَمِنْ آيَاتِهِ مَنَامُكُم بِاللَّيْلِ وَالنَّهَارِ.", "قَالَ فَإِنَّكَ مِنَ الْمُنظَرِينَ."], 2,
+                "(منامكم) مصدر ميمي بمعنى (نومكم) من الفعل (نام). أما (مبارك) و(مذبذبين) و(المنظرين) فأسماء مفعول."),
+            mk6("easy", "أيُّ الآيات الآتية اشتملتْ على مصدر ميمي؟",
+                ["وَذَرْنِي وَالْمُكَذِّبِينَ أُولِي النَّعْمَةِ.", "حَتَّىٰ إِذَا أَخَذْنَا مُتْرَفِيهِم بِالْعَذَابِ.", "وَالْقَنَاطِيرِ الْمُقَنطَرَةِ.", "وَتَنَاجَوْا بِالْإِثْمِ وَالْعُدْوَانِ وَمَعْصِيَتِ الرَّسُولِ."], 3,
+                "(معصية) مصدر ميمي بمعنى (عصيان) من الفعل (عصى). أما (المكذبين) و(مترفيهم) و(المقنطرة) فأسماء مفعول."),
+            mk6("medium", "أيُّ الآيات الآتية اشتملتْ على مصدر ميمي؟",
+                ["قَالُوا يَا صَالِحُ قَدْ كُنتَ فِينَا مَرْجُوًّا قَبْلَ هَٰذَا.", "وَالْمُحْصَنَاتُ مِنَ النِّسَاءِ.", "وَمَن تَابَ وَعَمِلَ صَالِحًا فَإِنَّهُ يَتُوبُ إِلَى اللَّهِ مَتَابًا.", "وَبِئْرٍ مُّعَطَّلَةٍ وَقَصْرٍ مَّشِيدٍ."], 2,
+                "(متاباً) مصدر ميمي بمعنى (توبة) من الفعل (تاب). أما (مرجوّاً) و(المحصنات) و(معطّلة) و(مشيد) فأسماء مفعول."),
+            mk6("medium", "أيُّ الجمل الآتية جاءت فيها صيغة (مُنتَظَر) مصدراً ميمياً؟",
+                ["نجاحُ الطالبِ مُنتَظَرٌ.", "أعجبني مُنتَظَرُ الطفلِ لأمِّه.", "مشهدُ شروقِ الشمسِ مُنتَظَرٌ بشوقٍ.", "المسافرُ مُنتَظَرُ الوصولِ في أي لحظة."], 1,
+                "في (أعجبني منتظر الطفل لأمه) تُؤوَّل بمعنى (انتظار)، فهي مصدر ميمي. وفي بقية الجمل اسم مفعول بمعنى (مَن/ما وقع عليه الانتظار)."),
+            mk6("hard", "أيُّ الآيات الآتية جاءت فيها صيغة (موعد) مصدراً ميمياً؟",
+                ["وَإِنَّ جَهَنَّمَ لَمَوْعِدُهُمْ أَجْمَعِينَ.", "قَالُوا مَا أَخْلَفْنَا مَوْعِدَكَ بِمَلْكِنَا.", "إِنَّ مَوْعِدَهُمُ الصُّبْحُ أَلَيْسَ الصُّبْحُ بِقَرِيبٍ.", "قَالَ مَوْعِدُكُمْ يَوْمُ الزِّينَةِ."], 1,
+                "في (ما أخلفنا موعدك) جاءت (موعد) بمعنى (الوعد) فهي مصدر ميمي. وفي بقية الآيات تدل على الزمان أو المكان (اسم زمان/مكان).")
+
+        ];
+
+        const DATA_VERSION = "v13_skills";
+        if (localStorage.getItem('esbah_data_version') !== DATA_VERSION) {
+            localStorage.removeItem('esbah_branches');
+            localStorage.removeItem('esbah_quizzes');
+            localStorage.removeItem('esbah_student_results');
+            localStorage.setItem('esbah_data_version', DATA_VERSION);
+        }
+
+        let portalData = {
+            currentView: 'home',
+            currentLesson: null,
+            fontSizeMultiplier: parseInt(localStorage.getItem('esbah_fontSize')) || 18,
+            studentName: localStorage.getItem('esbah_studentName') || '',
+            studentBranch: localStorage.getItem('esbah_studentBranch') || '',
+            teacherName: localStorage.getItem('esbah_teacherName') || "أستاذ المادة",
+            teacherTitle: localStorage.getItem('esbah_teacherTitle') || "خبير اللغة العربية",
+            teacherPhoto: localStorage.getItem('esbah_teacherPhoto') || defaultTeacherPhoto,
+            announcement: JSON.parse(localStorage.getItem('esbah_announcement')) || {
+                active: true,
+                text: "أهلاً بكم في منصة الإصباح التفاعلية — تم تحديث شروحات الدروس المقررة وفق أحدث منهج!"
+            },
+            branches: JSON.parse(localStorage.getItem('esbah_branches')) || {
+                lit: {
+                    title: "الفرع الأدبي",
+                    description: "المقرر الشامل لطلاب الفرع الأدبي في قواعد اللغة العربية والنحو والصرف.",
+                    icon: "fa-book-open",
+                    lessons: [
+                        { 
+                            id: 1, 
+                            title: "الدرس الأول: أفعال المقاربة والرجاء والشروع", 
+                            category: "النحو والصرف", 
+                            summary: "أفعال ناسخة ناقصة تدخل على الجملة الاسمية فترفع المبتدأ ويسمى اسمها وتنصب الخبر ويسمى خبرها بشرط أن يكون جملة فعلية فعلها مضارع.", 
+                            details: `
+                                <div class="space-y-4">
+                                    <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200">
+                                        <h4 class="font-bold text-[#8a1538] mb-1">📌 المفهوم العام:</h4>
+                                        <p>هي أفعال ناسخة ناقصة تدخل على الجملة الاسمية فترفع المبتدأ ويُسمى اسمها، وتُنصب الخبر ويُسمى خبرها.</p>
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <h4 class="font-bold text-[#165A7B]">🔹 أقسام أفعال المقاربة والرجاء والشروع:</h4>
+                                        <ul class="list-disc list-inside space-y-1.5 pr-2">
+                                            <li><strong class="text-slate-900">أفعال المقاربة:</strong> تدل على قرب وقوع الخبر، وهي: <span class="text-[#8a1538] font-bold">(كاد، كرب، أوشك)</span>.</li>
+                                            <li><strong class="text-slate-900">أفعال الرجاء:</strong> تدل على رجاء وقوع الخبر، وهي: <span class="text-[#8a1538] font-bold">(عسى، حرى، اخلولق)</span>.</li>
+                                            <li><strong class="text-slate-900">أفعال الشروع:</strong> تدل على بدء وقوع الخبر، وهي: <span class="text-[#8a1538] font-bold">(طفق، شرع، جعل، بدأ، قام، أخذ)</span>.</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <h4 class="font-bold text-[#165A7B]">🔹 قواعد الإعراب والملاحظات الفنية:</h4>
+                                        <ul class="list-disc list-inside space-y-1.5 pr-2">
+                                            <li>تُعرب هذه الأفعال عادةً على أنها <span class="font-bold">فعل ماض ناقص مبني على الفتح</span>.</li>
+                                            <li>يُستثنى من ذلك الفعلان <span class="text-[#8a1538] font-bold">(كاد، أوشك)</span> فقد يأتيا بصيغة المضارع <span class="font-bold">(يكاد - يوشك)</span>، وحينها يُعربان: <span class="font-bold text-emerald-700">فعل مضارع ناقص مرفوع بالضمة</span>.</li>
+                                            <li>يأتي اسم هذه الأفعال مرفوعاً دائماً، ويجب أن يكون خبرها جملة فعلية فعلها مضارع.</li>
+                                            <li>إذا سُبق الفعل المضارع بـ <span class="font-bold text-[#8a1538]">"أن"</span>، يُعد الفعل منصوباً ويُشكل مع "أن" مصدراً مؤولاً في محل نصب خبر لتلك الأفعال. وإذا لم يُسبق بـ "أن"، تكون الجملة الفعلية المرفوعة في محل نصب خبر.</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="p-4 bg-slate-100 rounded-xl border border-slate-200">
+                                        <h4 class="font-bold text-[#8a1538] mb-2">⚖️ حكم اقتران خبر أفعال المقاربة والرجاء والشروع بـ (أن):</h4>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs md:text-sm">
+                                            <div class="p-2 bg-white rounded-lg border"><strong class="text-rose-700">ممتنع:</strong> مع أفعال الشروع (أخذ، بدأ، شرع، قام، جعل، طفق).</div>
+                                            <div class="p-2 bg-white rounded-lg border"><strong class="text-amber-700">جائز بقلة:</strong> مع (كاد، كرب).</div>
+                                            <div class="p-2 bg-white rounded-lg border"><strong class="text-sky-700">جائز بكثرة:</strong> مع (عسى، أوشك).</div>
+                                            <div class="p-2 bg-white rounded-lg border"><strong class="text-emerald-700">واجب:</strong> مع (حرى، اخلولق).</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ` 
+                        },
+                        { 
+                            id: 2, 
+                            title: "الدرس الثاني: أدوات الشرط الجازمة", 
+                            category: "النحو", 
+                            summary: "أدوات تُستعمل لربط جملتين (فعل الشرط وجواب الشرط)، بحيث تجزم الفعلين معاً إعراباً، وحالات اقتران الجواب بالفاء.", 
+                            details: `
+                                <div class="space-y-4">
+                                    <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200">
+                                        <h4 class="font-bold text-[#8a1538] mb-1">📌 المفهوم:</h4>
+                                        <p>أدوات تُستعمل لربط جملتين (جملة فعل الشرط وجواب الشرط)، بحيث تجزم الفعلين معاً إعراباً.</p>
+                                    </div>
+
+                                    <div>
+                                        <h4 class="font-bold text-[#165A7B] mb-1">🔹 عناصر أسلوب الشرط:</h4>
+                                        <p>تتكون الجملة من ثلاثة عناصر رئيسية: <span class="font-bold text-[#8a1538]">(الأداة + فعل الشرط + جواب الشرط)</span>.</p>
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <h4 class="font-bold text-[#165A7B]">🔹 أقسام أدوات الشرط الجازمة:</h4>
+                                        <ul class="list-disc list-inside space-y-1.5 pr-2">
+                                            <li><strong class="text-slate-900">حروف:</strong> (إن، إذما).</li>
+                                            <li><strong class="text-slate-900">أسماء:</strong>
+                                                <div class="mr-4 mt-1 grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs md:text-sm">
+                                                    <span class="bg-white p-1.5 rounded border"><strong>مَن:</strong> للعاقل</span>
+                                                    <span class="bg-white p-1.5 rounded border"><strong>ما و مهما:</strong> لغير العاقل</span>
+                                                    <span class="bg-white p-1.5 rounded border"><strong>متى:</strong> للزمان</span>
+                                                    <span class="bg-white p-1.5 rounded border"><strong>أين و أينما:</strong> للمكان</span>
+                                                    <span class="bg-white p-1.5 rounded border"><strong>كيفما:</strong> للحال</span>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <h4 class="font-bold text-[#165A7B]">🔹 علامات جزم الفعل المضارع:</h4>
+                                        <ul class="list-disc list-inside space-y-1.5 pr-2">
+                                            <li><strong class="text-slate-900">السكون:</strong> وتستعمل مع الفعل الصحيح الآخر (الذي لا ينتهي بحرف علة وليس من الأفعال الخمسة).</li>
+                                            <li><strong class="text-slate-900">حذف حرف العلة:</strong> إذا انتهى الفعل المضارع بحرف علة (و - ي - ا).</li>
+                                            <li><strong class="text-slate-900">حذف النون:</strong> إذا كان الفعل من الأفعال الخمسة (تفعلون، يفعلون، تفعلان، يفعلان، تفعلين).</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <h4 class="font-bold text-[#165A7B]">🔹 حالات فعل الشرط وجوابه:</h4>
+                                        <ol class="list-decimal list-inside space-y-1 pr-2 text-slate-700">
+                                            <li>قد يأتيان معاً مضارعين مجزومين.</li>
+                                            <li>أو ماضيين في محل جزم.</li>
+                                            <li>أو فعل الشرط مضارع مجزوم وجواب الشرط ماضٍ في محل جزم.</li>
+                                            <li>أو فعل الشرط ماضٍ في محل جزم وجواب الشرط مضارع مجزوم.</li>
+                                        </ol>
+                                    </div>
+
+                                    <div class="p-4 bg-amber-50 rounded-xl border border-amber-300 space-y-1.5">
+                                        <h4 class="font-bold text-[#8a1538]">⚡ وجوب اقتران جواب الشرط بالفاء:</h4>
+                                        <p class="leading-relaxed">يجب أن يقترن جواب الشرط بالفاء إذا بدأ بـ: <span class="font-bold text-slate-900">جملة اسمية</span>، <span class="font-bold text-slate-900">جملة فعلية طلبية</span> (أمر، نهي، استفهام)، <span class="font-bold text-slate-900">فعل جامد</span> (عسى، ليس، نعم، بئس)، أو إذا سُبق بإحدى الأدوات: <span class="font-bold text-[#8a1538]">(قد، لن، ما، سوف، س)</span>.</p>
+                                    </div>
+                                </div>
+                            ` 
+                        },
+                        { 
+                            id: 3, 
+                            title: "الدرس الثالث: أدوات الشرط غير الجازمة", 
+                            category: "النحو", 
+                            summary: "أدوات تربط بين فعلين أو جملتين لتوضيح العلاقة بين السبب والنتيجة، لكنها لا تغير علامات الإعراب في الأفعال بعدها.", 
+                            details: `
+                                <div class="space-y-4">
+                                    <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200">
+                                        <h4 class="font-bold text-[#8a1538] mb-1">📌 المفهوم:</h4>
+                                        <p>أدوات تربط بين فعلين أو جملتين لتوضيح العلاقة بين السبب والنتيجة، لكنها لا تغير علامات الإعراب في الأفعال بعدها.</p>
+                                    </div>
+
+                                    <div class="space-y-3">
+                                        <h4 class="font-bold text-[#165A7B]">🔹 أبرز أدوات الشرط غير الجازمة وتفاصيلها:</h4>
+                                        
+                                        <div class="p-3 bg-slate-50 rounded-xl border space-y-1">
+                                            <h5 class="font-bold text-[#8a1538]">1. إذَا:</h5>
+                                            <p class="text-slate-700">ظرف لما يستقبل من الزمان متضمن معنى الشرط، في محل نصب مفعول فيه. يليها غالباً فعل الشرط مباشرة.</p>
+                                            <div class="p-2 bg-white rounded border text-xs text-slate-600 mt-1">
+                                                <strong>ملاحظة إعرابية للحيُود بعد (إذا):</strong> إذا جاء بعدها اسم، فيُعرب إما <span class="font-bold text-slate-800">فاعلاً لفعل محذوف</span> إذا كان الفعل الذي يليه مبنياً للمعلوم (مثل: إذا الرجلُ نصحك)، أو <span class="font-bold text-slate-800">نائب فاعل لفعل محذوف</span> إذا كان الفعل مبنياً للمجهول (مثل: إذا القصةُ قُرِئَت).
+                                            </div>
+                                        </div>
+
+                                        <div class="p-3 bg-slate-50 rounded-xl border space-y-1">
+                                            <h5 class="font-bold text-[#8a1538]">2. لَوْ:</h5>
+                                            <p class="text-slate-700"><span class="font-bold text-slate-900">حرف امتناع لامتناع</span>؛ أي امتنع جواب الشرط لامتناع فعل الشرط. يكون فعل الشرط وجوابه ماضيين، ويجوز اقتران جوابها غالباً باللام.</p>
+                                        </div>
+
+                                        <div class="p-3 bg-slate-50 rounded-xl border space-y-1">
+                                            <h5 class="font-bold text-[#8a1538]">3. لَوْلا:</h5>
+                                            <p class="text-slate-700"><span class="font-bold text-slate-900">حرف امتناع لوجود</span>؛ أي امتنع جواب الشرط لوجود فعل الشرط. يليها دائماً اسم يُعرب <span class="font-bold text-emerald-700">مبتدأ مرفوعاً وخبره محذوف وجوباً</span>. وغالباً يكون جوابها فعلاً ماضياً مقترناً باللام إن كان مثبتاً، وإن كان منفياً فلا يقترن باللام.</p>
+                                        </div>
+
+                                        <div class="p-3 bg-slate-50 rounded-xl border space-y-1">
+                                            <h5 class="font-bold text-[#8a1538]">4. كُلَّمَا:</h5>
+                                            <p class="text-slate-700">ظرف للزمان الماضي يفيد التكرار ومتضمن معنى الشرط. تفيد تكرار وقوع الجواب بتكرار وقوع الشرط، وتتكون جملتها حصراً من <span class="font-bold text-slate-900">فعل وجواب ماضيين</span>.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ` 
+                        }
+                    ]
+                },
+                sci: {
+                    title: "الفرع العلمي",
+                    description: "المقرر المخصص لطلاب الفرع العلمي ويتضمن الدروس المقررة في القواعد والنحو والصرف.",
+                    icon: "fa-atom",
+                    lessons: [
+                        { 
+                            id: 1, 
+                            title: "الدرس الأول: أفعال المقاربة والرجاء والشروع", 
+                            category: "النحو والصرف", 
+                            summary: "أفعال ناسخة ناقصة تدخل على الجملة الاسمية فترفع المبتدأ ويسمى اسمها وتنصب الخبر ويسمى خبرها بشرط أن يكون جملة فعلية فعلها مضارع.", 
+                            details: `
+                                <div class="space-y-4">
+                                    <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200">
+                                        <h4 class="font-bold text-[#165A7B] mb-1">📌 المفهوم العام:</h4>
+                                        <p>هي أفعال ناسخة ناقصة تدخل على الجملة الاسمية فترفع المبتدأ ويُسمى اسمها، وتُنصب الخبر ويُسمى خبرها.</p>
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <h4 class="font-bold text-[#165A7B]">🔹 أقسام أفعال المقاربة والرجاء والشروع:</h4>
+                                        <ul class="list-disc list-inside space-y-1.5 pr-2">
+                                            <li><strong class="text-slate-900">أفعال المقاربة:</strong> وتدل على قرب وقوع الخبر، وهي: <span class="text-[#165A7B] font-bold">(كاد، كرب، أوشك)</span>.</li>
+                                            <li><strong class="text-slate-900">أفعال الرجاء:</strong> وتدل على رجاء وقوع الخبر، وهي: <span class="text-[#165A7B] font-bold">(عسى، حرى، اخلولق)</span>.</li>
+                                            <li><strong class="text-slate-900">أفعال الشروع:</strong> وتدل على بدء وقوع الخبر، وهي: <span class="text-[#165A7B] font-bold">(طفق، شرع، جعل، بدأ، قام، أخذ)</span>.</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <h4 class="font-bold text-[#165A7B]">🔹 قواعد الإعراب والملاحظات الفنية:</h4>
+                                        <ul class="list-disc list-inside space-y-1.5 pr-2">
+                                            <li>تُعرب هذه الأفعال عادةً على أنها <span class="font-bold">فعل ماض ناقص مبني على الفتح</span>.</li>
+                                            <li>يُستثنى من ذلك الفعلان <span class="text-[#165A7B] font-bold">(كاد، أوشك)</span> فقد يأتيا بصيغة المضارع <span class="font-bold">(يكاد - يوشك)</span>، وحينها يُعربان: <span class="font-bold text-emerald-700">فعل مضارع ناقص مرفوع بالضمة</span>.</li>
+                                            <li>يأتي اسم هذه الأفعال مرفوعاً دائماً، ويجب أن يكون خبرها جملة فعلية فعلها مضارع.</li>
+                                            <li>إذا سُبق الفعل المضارع بـ <span class="font-bold text-[#165A7B]">"أن"</span>، يُعد الفعل منصوباً ويُشكل مع "أن" مصدراً مؤولاً في محل نصب خبر لتلك الأفعال. وإذا لم يُسبق بـ "أن"، تكون الجملة الفعلية المرفوعة في محل نصب خبر.</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="p-4 bg-slate-100 rounded-xl border border-slate-200">
+                                        <h4 class="font-bold text-[#165A7B] mb-2">⚖️ حكم اقتران خبر أفعال المقاربة والرجاء والشروع بـ (أن):</h4>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs md:text-sm">
+                                            <div class="p-2 bg-white rounded-lg border"><strong class="text-rose-700">ممتنع:</strong> مع أفعال الشروع (أخذ، بدأ، شرع، قام، جعل، طفق).</div>
+                                            <div class="p-2 bg-white rounded-lg border"><strong class="text-amber-700">جائز بقلة:</strong> مع (كاد، كرب).</div>
+                                            <div class="p-2 bg-white rounded-lg border"><strong class="text-sky-700">جائز بكثرة:</strong> مع (عسى، أوشك).</div>
+                                            <div class="p-2 bg-white rounded-lg border"><strong class="text-emerald-700">واجب:</strong> مع (حرى، اخلولق).</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ` 
+                        },
+                        { 
+                            id: 2, 
+                            title: "الدرس الثاني: أدوات الشرط الجازمة", 
+                            category: "النحو", 
+                            summary: "أدوات تُستعمل لربط جملتين (فعل الشرط وجواب الشرط)، بحيث تجزم الفعلين معاً إعراباً، وأحكام اقتران الجواب بالفاء.", 
+                            details: `
+                                <div class="space-y-4">
+                                    <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200">
+                                        <h4 class="font-bold text-[#165A7B] mb-1">📌 المفهوم:</h4>
+                                        <p>أدوات تُستعمل لربط جملتين (جملة فعل الشرط وجواب الشرط)، بحيث تجزم الفعلين معاً إعراباً.</p>
+                                    </div>
+
+                                    <div>
+                                        <h4 class="font-bold text-[#165A7B] mb-1">🔹 عناصر أسلوب الشرط:</h4>
+                                        <p>تتكون الجملة من ثلاثة عناصر رئيسية: <span class="font-bold text-[#165A7B]">(الأداة + فعل الشرط + جواب الشرط)</span>.</p>
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <h4 class="font-bold text-[#165A7B]">🔹 أقسام أدوات الشرط الجازمة:</h4>
+                                        <ul class="list-disc list-inside space-y-1.5 pr-2">
+                                            <li><strong class="text-slate-900">حروف:</strong> (إن، إذما).</li>
+                                            <li><strong class="text-slate-900">أسماء:</strong>
+                                                <div class="mr-4 mt-1 grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs md:text-sm">
+                                                    <span class="bg-white p-1.5 rounded border"><strong>مَن:</strong> للعاقل</span>
+                                                    <span class="bg-white p-1.5 rounded border"><strong>ما و مهما:</strong> لغير العاقل</span>
+                                                    <span class="bg-white p-1.5 rounded border"><strong>متى:</strong> للزمان</span>
+                                                    <span class="bg-white p-1.5 rounded border"><strong>أين و أينما:</strong> للمكان</span>
+                                                    <span class="bg-white p-1.5 rounded border"><strong>كيفما:</strong> للحال</span>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <h4 class="font-bold text-[#165A7B]">🔹 علامات جزم الفعل المضارع:</h4>
+                                        <ul class="list-disc list-inside space-y-1.5 pr-2">
+                                            <li><strong class="text-slate-900">السكون:</strong> وتستعمل مع الفعل الصحيح الآخر (الذي لا ينتهي بحرف علة وليس من الأفعال الخمسة).</li>
+                                            <li><strong class="text-slate-900">حذف حرف العلة:</strong> إذا انتهى الفعل المضارع بحرف علة (و - ي - ا).</li>
+                                            <li><strong class="text-slate-900">حذف النون:</strong> إذا كان الفعل من الأفعال الخمسة (تفعلون، يفعلون، تفعلان، يفعلان، تفعلين).</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <h4 class="font-bold text-[#165A7B]">🔹 حالات فعل الشرط وجوابه:</h4>
+                                        <ol class="list-decimal list-inside space-y-1 pr-2 text-slate-700">
+                                            <li>قد يأتيان معاً مضارعين مجزومين.</li>
+                                            <li>أو ماضيين في محل جزم.</li>
+                                            <li>أو فعل الشرط مضارع مجزوم وجواب الشرط ماضٍ في محل جزم.</li>
+                                            <li>أو فعل الشرط ماضٍ في محل جزم وجواب الشرط مضارع مجزوم.</li>
+                                        </ol>
+                                    </div>
+
+                                    <div class="p-4 bg-amber-50 rounded-xl border border-amber-300 space-y-1.5">
+                                        <h4 class="font-bold text-[#165A7B]">⚡ وجوب اقتران جواب الشرط بالفاء:</h4>
+                                        <p class="leading-relaxed">يجب أن يقترن جواب الشرط بالفاء إذا بدأ بـ: <span class="font-bold text-slate-900">جملة اسمية</span>، <span class="font-bold text-slate-900">جملة فعلية طلبية</span> (أمر، نهي، استفهام)، <span class="font-bold text-slate-900">فعل جامد</span> (عسى، ليس، نعم، بئس)، أو إذا سُبق بإحدى الأدوات: <span class="font-bold text-[#165A7B]">(قد، لن، ما، سوف، س)</span>.</p>
+                                    </div>
+                                </div>
+                            ` 
+                        },
+                        { 
+                            id: 3, 
+                            title: "الدرس الثالث: أدوات الشرط غير الجازمة", 
+                            category: "النحو", 
+                            summary: "أدوات تربط بين فعلين أو جملتين لتوضيح العلاقة بين السبب والنتيجة، لكنها لا تغير علامات الإعراب في الأفعال بعدها.", 
+                            details: `
+                                <div class="space-y-4">
+                                    <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200">
+                                        <h4 class="font-bold text-[#165A7B] mb-1">📌 المفهوم:</h4>
+                                        <p>أدوات تربط بين فعلين أو جملتين لتوضيح العلاقة بين السبب والنتيجة، لكنها لا تغير علامات الإعراب في الأفعال بعدها.</p>
+                                    </div>
+
+                                    <div class="space-y-3">
+                                        <h4 class="font-bold text-[#165A7B]">🔹 أبرز أدوات الشرط غير الجازمة وتفاصيلها:</h4>
+                                        
+                                        <div class="p-3 bg-slate-50 rounded-xl border space-y-1">
+                                            <h5 class="font-bold text-[#165A7B]">1. إذَا:</h5>
+                                            <p class="text-slate-700">ظرف لما يستقبل من الزمان متضمن معنى الشرط، في محل نصب مفعول فيه. يليها غالباً فعل الشرط مباشرة.</p>
+                                            <div class="p-2 bg-white rounded border text-xs text-slate-600 mt-1">
+                                                <strong>ملاحظة إعرابية للحيُود بعد (إذا):</strong> إذا جاء بعدها اسم، فيُعرب إما <span class="font-bold text-slate-800">فاعلاً لفعل محذوف</span> إذا كان الفعل الذي يليه مبنياً للمعلوم (مثل: إذا الرجلُ نصحك)، أو <span class="font-bold text-slate-800">نائب فاعل لفعل محذوف</span> إذا كان الفعل مبنياً للمجهول (مثل: إذا القصةُ قُرِئَت).
+                                            </div>
+                                        </div>
+
+                                        <div class="p-3 bg-slate-50 rounded-xl border space-y-1">
+                                            <h5 class="font-bold text-[#165A7B]">2. لَوْ:</h5>
+                                            <p class="text-slate-700"><span class="font-bold text-slate-900">حرف امتناع لامتناع</span>؛ أي امتنع جواب الشرط لامتناع فعل الشرط. يكون فعل الشرط وجوابه ماضيين، ويجوز اقتران جوابها غالباً باللام.</p>
+                                        </div>
+
+                                        <div class="p-3 bg-slate-50 rounded-xl border space-y-1">
+                                            <h5 class="font-bold text-[#8a1538]">3. لَوْلا:</h5>
+                                            <p class="text-slate-700"><span class="font-bold text-slate-900">حرف امتناع لوجود</span>؛ أي امتنع جواب الشرط لوجود فعل الشرط. يليها دائماً اسم يُعرب <span class="font-bold text-emerald-700">مبتدأ مرفوعاً وخبره محذوف وجوباً</span>. وغالباً يكون جوابها فعلاً ماضياً مقترناً باللام إن كان مثبتاً، وإن كان منفياً فلا يقترن باللام.</p>
+                                        </div>
+
+                                        <div class="p-3 bg-slate-50 rounded-xl border space-y-1">
+                                            <h5 class="font-bold text-[#165A7B]">4. كُلَّمَا:</h5>
+                                            <p class="text-slate-700">ظرف للزمان الماضي يفيد التكرار ومتضمن معنى الشرط. تفيد تكرار وقوع الجواب بتكرار وقوع الشرط، وتتكون جملتها حصراً من <span class="font-bold text-slate-900">فعل وجواب ماضيين</span>.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ` 
+                        }
+                    ]
+                }
+            },
+            quizzes: JSON.parse(localStorage.getItem('esbah_quizzes')) || DEFAULT_QUIZZES
+        };
+
+        function openAdminModal() {
+            if (isAdminLoggedIn) {
+                go('admin');
+            } else {
+                document.getElementById('admin-login-modal').classList.remove('hidden');
+            }
+        }
+
+        function closeAdminModal() {
+            document.getElementById('admin-login-modal').classList.add('hidden');
+            document.getElementById('login-error').classList.add('hidden');
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('admin-email').value.trim();
+            const pass = document.getElementById('admin-password').value.trim();
+            if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
+                isAdminLoggedIn = true;
+                closeAdminModal();
+                go('admin');
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        }
+
+        function adjustFontSize(delta) {
+            portalData.fontSizeMultiplier = Math.max(14, Math.min(24, portalData.fontSizeMultiplier + delta));
+            document.body.style.fontSize = portalData.fontSizeMultiplier + 'px';
+            localStorage.setItem('esbah_fontSize', portalData.fontSizeMultiplier);
+        }
+
+        function go(view, param1) {
+            portalData.currentView = view;
+            if (param1 !== undefined) {
+                portalData.currentLesson = param1;
+            }
+            renderApp();
+            updateStudentBadge();
+            updateAnnouncementDisplay();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function checkBranchAccess(targetView) {
+            if (!portalData.studentName || !portalData.studentBranch) {
+                go('onboarding');
+            } else {
+                if (targetView === 'branch') {
+                    go('branch', portalData.studentBranch);
+                } else if (targetView === 'quizzes') {
+                    go('quizzes');
+                } else if (targetView === 'comprehensive') {
+                    go('comprehensive');
+                } else {
+                    go(targetView);
+                }
+            }
+        }
+
+        function updateStudentBadge() {
+            const badge = document.getElementById('student-badge');
+            if (portalData.studentName && portalData.studentBranch) {
+                document.getElementById('header-student-name').textContent = portalData.studentName;
+                document.getElementById('header-student-branch').textContent = portalData.studentBranch === 'sci' ? 'الفرع العلمي' : 'الفرع الأدبي';
+                badge.classList.remove('hidden');
+                badge.classList.add('inline-flex');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function updateAnnouncementDisplay() {
+            const banner = document.getElementById('announcement-banner');
+            const textEl = document.getElementById('announcement-text');
+            if (portalData.announcement && portalData.announcement.active && portalData.announcement.text) {
+                textEl.textContent = portalData.announcement.text;
+                banner.classList.remove('hidden');
+            } else {
+                banner.classList.add('hidden');
+            }
+        }
+
+        function resetStudentData() {
+            localStorage.removeItem('esbah_studentName');
+            localStorage.removeItem('esbah_studentBranch');
+            portalData.studentName = '';
+            portalData.studentBranch = '';
+            updateHeaderNav();
+            go('onboarding');
+        }
+
+        function handleStudentSetup(e) {
+            e.preventDefault();
+            const name = document.getElementById('setup-student-name').value.trim();
+            const branchInput = document.querySelector('input[name="setup-branch"]:checked');
+            if (!name || !branchInput) return;
+            portalData.studentName = name;
+            portalData.studentBranch = branchInput.value;
+            localStorage.setItem('esbah_studentName', name);
+            localStorage.setItem('esbah_studentBranch', branchInput.value);
+            updateHeaderNav();
+            go('home');
+        }
+
+        function renderApp() {
+            const container = document.getElementById('app-content');
+            if (!container) return;
+
+            if (portalData.currentView === 'onboarding' || (!portalData.studentName || !portalData.studentBranch)) {
+                container.innerHTML = `
+                    <div class="max-w-xl mx-auto bg-white p-6 md:p-10 rounded-2xl border border-slate-200 shadow-xl space-y-6 my-6">
+                        <div class="text-center space-y-2">
+                            <div class="w-16 h-16 rounded-2xl maroon-header text-white flex items-center justify-center font-bold text-2xl mx-auto shadow">
+                                أ
+                            </div>
+                            <h1 class="text-xl md:text-2xl font-bold text-[#8a1538]">مرحباً بك في منصة الإصباح التعليمية</h1>
+                            <p class="text-xs md:text-sm text-slate-500 font-['Open_Sans']">
+                                ابدأ رحلتك التعليمية في قواعد اللغة العربية للصف الثاني عشر.
+                            </p>
+                        </div>
+
+                        <form onsubmit="handleStudentSetup(event)" class="space-y-5 text-xs md:text-sm">
+                            <div class="space-y-1.5">
+                                <label class="block font-bold text-slate-800">اسم الطالب الكريم:</label>
+                                <input type="text" id="setup-student-name" required value="${portalData.studentName}" placeholder="اكتب اسمك الكامل هنا..." class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#8a1538] outline-none text-slate-800">
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block font-bold text-[#8a1538] text-base text-center bg-amber-50 py-2 rounded-xl border border-amber-200">
+                                    «اختر الفرع الدراسي للمتابعة»
+                                </label>
+                                <div class="grid grid-cols-2 gap-4 pt-2">
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="setup-branch" value="sci" ${portalData.studentBranch === 'sci' ? 'checked' : ''} class="peer hidden">
+                                        <div class="p-4 rounded-xl border-2 border-slate-200 peer-checked:border-[#165A7B] peer-checked:bg-[#165A7B]/10 hover:border-slate-300 transition-all text-center space-y-2">
+                                            <div class="w-10 h-10 rounded-full bg-[#165A7B]/10 text-[#165A7B] flex items-center justify-center mx-auto text-lg">
+                                                <i class="fa-solid fa-atom"></i>
+                                            </div>
+                                            <span class="font-bold text-slate-900 block">الفرع العلمي</span>
+                                            <span class="text-[11px] text-slate-500 font-['Open_Sans'] block">أفعال المقاربة، أدوات الشرط...</span>
+                                        </div>
+                                    </label>
+
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="setup-branch" value="lit" ${portalData.studentBranch === 'lit' ? 'checked' : ''} class="peer hidden">
+                                        <div class="p-4 rounded-xl border-2 border-slate-200 peer-checked:border-[#8a1538] peer-checked:bg-[#8a1538]/10 hover:border-slate-300 transition-all text-center space-y-2">
+                                            <div class="w-10 h-10 rounded-full bg-[#8a1538]/10 text-[#8a1538] flex items-center justify-center mx-auto text-lg">
+                                                <i class="fa-solid fa-book-open"></i>
+                                            </div>
+                                            <span class="font-bold text-slate-900 block">الفرع الأدبي</span>
+                                            <span class="text-[11px] text-slate-500 font-['Open_Sans'] block">إعمال المصدر، اسم التفضيل...</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full py-3.5 primary-button text-sm md:text-base font-bold shadow-md">
+                                حفظ البيانات والدخول إلى المنصة
+                            </button>
+                        </form>
+                    </div>
+                `;
+                return;
+            }
+
+            if (portalData.currentView === 'home') {
+                container.innerHTML = `
+                    <div class="relative overflow-hidden rounded-2xl maroon-header text-white p-6 md:p-10 shadow-lg border border-[#8A1538]/20">
+                        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                            <div class="text-center md:text-right space-y-3.5 max-w-xl">
+                                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/20 text-[#EAB893] text-xs font-semibold border border-white/20">
+                                    <i class="fa-solid fa-graduation-cap text-xs"></i>
+                                    <span>مرحباً بك، ${portalData.studentName} (${portalData.studentBranch === 'sci' ? 'الفرع العلمي' : 'الفرع الأدبي'})</span>
+                                </div>
+                                <h1 class="text-2xl md:text-3xl font-bold leading-tight text-white">
+                                    الإصباح في <span class="text-[#EAB893]">اللغة العربية</span>
+                                </h1>
+                                <p class="text-slate-100 text-sm md:text-base leading-relaxed font-['Open_Sans']">
+                                    مرجعك الشامل في النحو والصرف والقواعد. يحتوي الموقع على الملخصات والشروحات وبنك الأسئلة الكامل لدروس فرعك الدراسي.
+                                </p>
+                                <div class="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-3">
+                                    <button onclick="checkBranchAccess('branch')" class="px-5 py-2.5 rounded-xl bg-[#165A7B] hover:bg-[#124963] text-white font-semibold text-xs shadow transition-all flex items-center gap-2">
+                                        <i class="fa-solid fa-book-open"></i>
+                                        <span>استعراض دروس ${portalData.studentBranch === 'sci' ? 'الفرع العلمي' : 'الفرع الأدبي'}</span>
+                                    </button>
+                                    <button onclick="checkBranchAccess('quizzes')" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs shadow transition-all flex items-center gap-2">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        <span>بنك الأسئلة والتدريبات التفاعلية</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex flex-col items-center justify-center p-4 bg-white/15 backdrop-blur-md rounded-2xl border border-white/25 shadow-md w-48 relative">
+                                <div class="w-32 h-40 rounded-xl overflow-hidden border-2 border-white/40 shadow-md mb-2 bg-slate-100 flex items-center justify-center">
+                                    <img src="${portalData.teacherPhoto}" alt="صورة المعلم" class="w-full h-full object-cover object-top" onerror="this.onerror=null; this.src='${defaultTeacherPhoto}';">
+                                </div>
+                                <span class="text-xs font-bold text-white text-center">${portalData.teacherName}</span>
+                                <span class="text-[11px] text-[#EAB893] font-medium text-center">${portalData.teacherTitle}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="gov-gray-box p-6 rounded-2xl flex items-center gap-4 shadow-sm">
+                        <div class="w-12 h-12 rounded-xl bg-[#f5f4ef] border border-[#aaa]/30 text-[#165A7B] flex items-center justify-center text-xl shrink-0">
+                            <i class="fa-solid fa-book-open-reader"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-[#313b40] mb-1">دليل الدروس والأسئلة</h4>
+                            <p class="text-xs md:text-sm text-slate-600 font-['Open_Sans'] leading-relaxed">
+                                يتم إظهار جميع المعلومات والقواعد النحوية يتبعها بنك الأسئلة والتدريبات الخاصة بـ <strong class="text-[#8a1538]">${portalData.studentBranch === 'sci' ? 'الفرع العلمي' : 'الفرع الأدبي'}</strong> بشكل متكامل.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="max-w-xl mx-auto">
+                        <div onclick="checkBranchAccess('branch')" class="group p-6 rounded-2xl bg-white border-2 ${portalData.studentBranch === 'sci' ? 'border-[#165A7B]' : 'border-[#8a1538]'} shadow-md hover:shadow-lg transition-all cursor-pointer relative overflow-hidden text-center space-y-3">
+                            <div class="w-16 h-16 rounded-2xl ${portalData.studentBranch === 'sci' ? 'bg-[#165A7B]/10 text-[#165A7B]' : 'bg-[#8a1538]/10 text-[#8a1538]'} flex items-center justify-center text-2xl mx-auto">
+                                <i class="fa-solid ${portalData.studentBranch === 'sci' ? 'fa-atom' : 'fa-book-open'}"></i>
+                            </div>
+                            <h3 class="font-bold text-lg text-slate-900">مقرر ${portalData.studentBranch === 'sci' ? 'الفرع العلمي' : 'الفرع الأدبي'}</h3>
+                            <p class="text-xs md:text-sm text-slate-600 font-['Open_Sans']">${portalData.branches[portalData.studentBranch].description}</p>
+                            <div class="pt-2">
+                                <span class="inline-flex items-center gap-2 px-4 py-2 rounded-xl ${portalData.studentBranch === 'sci' ? 'bg-[#165A7B] text-white' : 'primary-button text-white'} text-xs font-bold">
+                                    <span>عرض الدروس وبنك الأسئلة</span>
+                                    <i class="fa-solid fa-arrow-left text-[10px]"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (portalData.currentView === 'branch') {
+                const branchKey = portalData.studentBranch;
+                const branch = portalData.branches[branchKey];
+                container.innerHTML = `
+                    <div class="space-y-6">
+                        <div class="flex items-center justify-between bg-[#f5f4ef] p-4 rounded-xl border border-slate-200">
+                            <div class="flex items-center gap-3">
+                                <button onclick="go('home')" class="p-2 rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs">
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </button>
+                                <div>
+                                    <h2 class="text-base font-bold text-[#8a1538]">${branch.title} (الطالب: ${portalData.studentName})</h2>
+                                    <p class="text-xs text-slate-500 font-['Open_Sans']">${branch.description}</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="go('quizzes')" class="px-3 py-1.5 bg-[#165A7B] text-white rounded-lg text-xs font-semibold flex items-center gap-1">
+                                    <i class="fa-solid fa-pen-to-square text-xs"></i>
+                                    <span>بنك الأسئلة والتدريبات</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            ${branch.lessons.map(l => `
+                                <div onclick="go('lesson', ${l.id})" class="p-5 rounded-xl bg-white border border-slate-200 hover:border-[#8a1538] shadow-sm cursor-pointer transition-all space-y-3">
+                                    <span class="px-2.5 py-0.5 rounded-full bg-[#f5f4ef] text-slate-700 text-xs font-semibold">${l.category}</span>
+                                    <h3 class="font-bold text-sm text-slate-900">${l.title}</h3>
+                                    <p class="text-xs md:text-sm text-slate-600 font-['Open_Sans'] leading-relaxed">${l.summary}</p>
+                                    <div class="pt-2 flex items-center justify-between text-xs text-[#8a1538] font-bold">
+                                        <span>عرض الشرح الشامل</span>
+                                        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } else if (portalData.currentView === 'lesson') {
+                const branchKey = portalData.studentBranch;
+                const branch = portalData.branches[branchKey];
+                const lesson = branch.lessons.find(l => l.id === portalData.currentLesson) || branch.lessons[0];
+                container.innerHTML = `
+                    <div class="space-y-6 max-w-4xl mx-auto bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                            <button onclick="checkBranchAccess('branch')" class="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-[#8a1538]">
+                                <i class="fa-solid fa-arrow-right"></i>
+                                <span>العودة لقائمة دروس ${branch.title}</span>
+                            </button>
+                            <span class="px-3 py-1 rounded-full bg-[#8a1538]/10 text-[#8a1538] text-xs font-semibold">${lesson.category}</span>
+                        </div>
+
+                        <div class="space-y-4">
+                            <h1 class="text-xl md:text-2xl font-bold text-slate-900">${lesson.title}</h1>
+                            <p class="text-xs text-slate-500 font-['Open_Sans']">إعداد المادة: ${portalData.teacherName} — ${branch.title}</p>
+                            
+                            <div class="gov-gray-box p-4 rounded-xl text-xs md:text-sm space-y-2">
+                                <h4 class="font-bold text-slate-800">الملخص الأساسي:</h4>
+                                <p class="text-slate-600 font-['Open_Sans']">${lesson.summary}</p>
+                            </div>
+
+                            <div class="space-y-4 text-xs md:text-sm text-slate-700 leading-relaxed pt-3 font-['Open_Sans']">
+                                <h3 class="font-bold text-sm md:text-base text-[#8a1538] font-['Cairo']">التفاصيل والقواعد النحوية:</h3>
+                                <p class="p-4 rounded-xl bg-slate-50 border border-slate-200">${lesson.details || lesson.summary}</p>
+                            </div>
+                        </div>
+
+                        <div class="pt-6 border-t border-slate-100 flex justify-between items-center">
+                            <button onclick="checkBranchAccess('quizzes')" class="px-4 py-2.5 primary-button text-xs md:text-sm font-semibold flex items-center gap-2">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                                <span>الانتقال لبنك الأسئلة والتطبيق العملي</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else if (portalData.currentView === 'quizzes') {
+                const studentBranch = portalData.studentBranch;
+                const branchName = studentBranch === 'sci' ? 'الفرع العلمي' : 'الفرع الأدبي';
+                if (remedial) {
+                    const R = remedial, titleR = R.mode === 'weak' ? 'تدريب علاجي لمهاراتك الضعيفة' : 'تدريبات إضافية للاحتراف';
+                    if (R.idx >= R.list.length) {
+                        const p = Math.round((R.correct / R.list.length) * 100);
+                        container.innerHTML = `<div class="max-w-xl mx-auto bg-white p-8 rounded-2xl border border-slate-200 shadow-lg text-center space-y-4">
+                            <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mx-auto"><i class="fa-solid fa-trophy"></i></div>
+                            <h2 class="text-lg font-bold text-slate-900">${titleR}</h2>
+                            <div class="p-4 rounded-xl bg-slate-50 border font-bold text-[#8a1538]">نتيجتك: ${R.correct} من ${R.list.length} (${p}%)</div>
+                            <p class="text-xs text-slate-600">${p >= 80 ? 'ممتاز! اقتربت من الاحتراف.' : 'راجع الشروح وأعد المحاولة لتتقن المهارة.'}</p>
+                            <button onclick="endRemedial()" class="px-5 py-2.5 primary-button text-xs font-bold">رجوع</button></div>`;
+                    } else {
+                        const q = R.list[R.idx], ok = selectedOption === q.correct;
+                        container.innerHTML = `<div class="max-w-3xl mx-auto space-y-4">
+                            <div class="bg-white p-4 rounded-xl border flex items-center justify-between flex-wrap gap-2">
+                                <span class="px-3 py-1 rounded-full bg-[#8a1538]/10 text-[#8a1538] text-xs font-bold">${titleR}</span>
+                                <span class="text-xs text-slate-500">مهارة: ${skillOf(q)} — سؤال ${R.idx + 1} من ${R.list.length}</span></div>
+                            <div class="bg-white p-6 rounded-2xl border shadow-md space-y-5">
+                                <h3 class="font-bold text-base text-slate-900 leading-relaxed">${q.question}</h3>
+                                <div class="space-y-3">${q.options.map((o, i) => {
+                                    let st = 'border-slate-200 hover:bg-slate-50 text-slate-700';
+                                    if (isAnswerSubmitted) st = i === q.correct ? 'bg-emerald-50 border-emerald-500 text-emerald-800 font-bold' : i === selectedOption ? 'bg-rose-50 border-rose-500 text-rose-800 font-bold' : 'border-slate-200 opacity-50';
+                                    else if (selectedOption === i) st = 'border-[#8a1538] bg-[#8a1538]/5 font-bold text-[#8a1538]';
+                                    return `<button onclick="selectOption(${i})" ${isAnswerSubmitted ? 'disabled' : ''} class="w-full p-4 rounded-xl border text-right text-sm ${st}">${o}</button>`;
+                                }).join('')}</div>
+                                ${!isAnswerSubmitted ? `<div class="flex justify-end"><button onclick="remedialSubmit()" ${selectedOption === null ? 'disabled class="px-6 py-3 bg-slate-200 text-slate-400 rounded-xl text-xs font-bold"' : 'class="px-6 py-3 primary-button text-xs font-bold"'}>تأكيد الإجابة</button></div>`
+                                : `<div class="p-5 rounded-2xl ${ok ? 'bg-emerald-50 border border-emerald-200' : 'bg-rose-50 border border-rose-200'} space-y-2">
+                                    <div class="font-bold text-sm ${ok ? 'text-emerald-800' : 'text-rose-800'}">${ok ? 'إجابة صحيحة! أحسنت 🎉' : 'إجابتك خاطئة! الصحيحة: (' + q.options[q.correct] + ')'}</div>
+                                    <div class="text-xs md:text-sm text-slate-700 leading-relaxed bg-white/90 p-3 rounded-xl border">${q.explanation}</div></div>
+                                    <div class="flex justify-end"><button onclick="remedialNext()" class="px-6 py-3 bg-[#165A7B] text-white rounded-xl text-xs font-bold">${R.idx === R.list.length - 1 ? 'عرض النتيجة' : 'السؤال التالي'}</button></div>`}
+                            </div></div>`;
+                    }
+                    return;
+                }
+                const lessonsList = quizLessons(studentBranch);
+                if (selectedQuizLesson !== '__all__' && !lessonsList.includes(selectedQuizLesson)) selectedQuizLesson = null;
+
+                if (!selectedQuizLesson) {
+                    if (lessonsList.length === 0) {
+                        container.innerHTML = `<div class="bg-white p-8 rounded-2xl border text-center text-slate-500 text-xs">لا توجد تدريبات مضافة لهذا الفرع حالياً.</div>`;
+                        return;
+                    }
+                    container.innerHTML = `
+                        <div class="max-w-3xl mx-auto space-y-5">
+                            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                                <h1 class="text-lg md:text-xl font-bold text-[#8a1538]">التدريبات (${branchName})</h1>
+                                <p class="text-xs text-slate-500 font-['Open_Sans'] mt-1">اختر الدرس الذي تريد التدرب عليه. كل تدريب يمر بثلاث مراحل: سهل ← متوسط ← صعب.</p>
+                            </div>
+                            <div class="grid gap-3 md:grid-cols-2">
+                                ${lessonsList.map((n, i) => {
+                                    const lvls = activeLevels(studentBranch, n);
+                                    const total = lvls.reduce((sum, l) => sum + l.questions.length, 0);
+                                    return `
+                                        <button onclick="openQuizLessonIdx(${i})" class="text-right p-5 bg-white rounded-2xl border-2 border-slate-200 hover:border-[#8a1538] hover:shadow-md transition-all space-y-3">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-11 h-11 rounded-xl bg-[#8a1538]/10 text-[#8a1538] flex items-center justify-center shrink-0"><i class="fa-solid fa-pen-to-square"></i></div>
+                                                <h3 class="font-bold text-sm text-slate-900 leading-snug">${n}</h3>
+                                            </div>
+                                            <div class="flex items-center gap-1.5 flex-wrap text-[11px] font-bold">
+                                                <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">${total} سؤال</span>
+                                                ${lvls.map(l => `<span class="px-2 py-0.5 rounded-full ${l.badge}">${l.name.replace('المستوى ', '')}: ${l.questions.length}</span>`).join('')}
+                                            </div>
+                                        </button>`;
+                                }).join('')}
+                            </div>
+                        </div>`;
+                    return;
+                }
+
+                const levels = activeLevels(studentBranch, selectedQuizLesson);
+
+                if (levels.length === 0) {
+                    container.innerHTML = `<div class="bg-white p-8 rounded-2xl border text-center text-slate-500 text-xs">لا توجد أسئلة مضافة لهذا الدرس حالياً.</div>`;
+                    return;
+                }
+                if (currentLevelPos >= levels.length) currentLevelPos = 0;
+
+                const lv = levels[currentLevelPos];
+                const totalQ = lv.questions.length;
+                const lvCorrect = levelCorrect[lv.key] || 0;
+                const earned = (l) => (levelCorrect[l.key] || 0) * l.points;
+                const maxPts = (l) => l.questions.length * l.points;
+                const pointsSoFar = levels.reduce((s, l) => s + earned(l), 0);
+                const pointsMax = levels.reduce((s, l) => s + maxPts(l), 0);
+
+                const stepper = `
+                    <div class="space-y-2">
+                    <div class="text-center text-xs text-slate-600 flex items-center justify-center gap-3 flex-wrap">
+                        <span class="font-bold text-[#8a1538]">${lessonTitleFor(selectedQuizLesson)}</span>
+                        <button onclick="changeQuizLesson()" class="underline text-[#165A7B] hover:text-[#124963]">تغيير الدرس</button>
+                    </div>
+                    <div class="flex items-center justify-center gap-2 flex-wrap">
+                        ${levels.map((l, i) => {
+                            const done = i < currentLevelPos || (i === currentLevelPos && stageResultShown);
+                            const current = i === currentLevelPos && !stageResultShown;
+                            const style = current ? l.badge + ' ring-2 ring-offset-1 ring-slate-300' : done ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-400';
+                            return `<span class="px-3 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 ${style}"><i class="fa-solid ${done ? 'fa-circle-check' : l.icon}"></i>${l.name}</span>`;
+                        }).join('<i class="fa-solid fa-chevron-left text-[10px] text-slate-300"></i>')}
+                    </div>
+                    </div>`;
+
+                // ---------- شاشة نتيجة المرحلة / النتيجة النهائية ----------
+                if (stageResultShown) {
+                    const pct = Math.round((lvCorrect / totalQ) * 100);
+                    const stagePoints = earned(lv);
+                    const isLast = currentLevelPos === levels.length - 1;
+                    const msg = pct >= 80 ? 'أداء ممتاز، بارك الله فيك!' : pct >= 50 ? 'أداء جيد، واصل التقدم!' : 'لا بأس، راجع الشروح وستتحسن نتيجتك بإذن الله!';
+
+                    if (!isLast) {
+                        const nextLv = levels[currentLevelPos + 1];
+                        container.innerHTML = `
+                            <div class="max-w-xl mx-auto space-y-4">
+                                ${stepper}
+                                <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-lg text-center space-y-5">
+                                    <div class="w-20 h-20 rounded-full ${lv.badge} flex items-center justify-center text-3xl mx-auto">
+                                        <i class="fa-solid ${pct >= 50 ? 'fa-medal' : 'fa-graduation-cap'}"></i>
+                                    </div>
+                                    <h2 class="text-xl font-bold text-slate-900">أنهيت ${lv.name}!</h2>
+                                    <p class="text-sm text-slate-600">${msg}</p>
+                                    <div class="grid grid-cols-2 gap-3 text-sm">
+                                        <div class="p-4 rounded-xl ${lv.soft} border">
+                                            <div class="text-xs text-slate-500">إجاباتك الصحيحة</div>
+                                            <div class="font-bold text-lg ${lv.text}">${lvCorrect} من ${totalQ} (${pct}%)</div>
+                                        </div>
+                                        <div class="p-4 rounded-xl ${lv.soft} border">
+                                            <div class="text-xs text-slate-500">نقاط هذه المرحلة</div>
+                                            <div class="font-bold text-lg ${lv.text}">${stagePoints} من ${maxPts(lv)}</div>
+                                        </div>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 font-bold text-[#8a1538]">
+                                        مجموع نقاطك حتى الآن: ${pointsSoFar} نقطة
+                                    </div>
+                                    <p class="text-xs text-slate-500">المرحلة التالية: <strong>${nextLv.name}</strong> (${nextLv.questions.length} سؤال، كل سؤال بـ ${nextLv.points} نقاط)</p>
+                                    <button onclick="goNextLevel()" class="px-6 py-3 primary-button text-sm font-bold shadow-md inline-flex items-center gap-2">
+                                        <span>الانتقال إلى ${nextLv.name}</span>
+                                        <i class="fa-solid fa-arrow-left"></i>
+                                    </button>
+                                </div>
+                            </div>`;
+                    } else {
+                        const totalPct = Math.round((pointsSoFar / pointsMax) * 100);
+                        const weak = Object.keys(weakSkills);
+                        const nWeak = reserveFor(studentBranch, selectedQuizLesson, weak).length;
+                        const nAll = reserveFor(studentBranch, selectedQuizLesson).length;
+                        const remedialBox = weak.length ? `
+                            <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-right space-y-2">
+                                <div class="font-bold text-sm text-rose-800"><i class="fa-solid fa-bullseye ml-1"></i>مهارات تحتاج تقوية:</div>
+                                <ul class="list-disc mr-5 text-xs text-slate-700 space-y-1">${weak.map(w => `<li>${w}</li>`).join('')}</ul>
+                                ${nWeak ? `<button onclick="startRemedial('weak')" class="px-4 py-2 primary-button text-xs font-bold">ابدأ التدريب العلاجي (${nWeak} سؤال)</button>` : '<p class="text-xs text-slate-500">سنضيف قريباً أسئلة علاجية لهذه المهارات.</p>'}
+                            </div>` : `
+                            <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-right space-y-2">
+                                <div class="font-bold text-sm text-emerald-800"><i class="fa-solid fa-star ml-1"></i>لم تخطئ في أي سؤال، أحسنت!</div>
+                                <p class="text-xs text-slate-700">تدرّب على تدريبات أخرى لتصل لدرجة الاحتراف.</p>
+                                ${nAll ? `<button onclick="startRemedial('pro')" class="px-4 py-2 primary-button text-xs font-bold">ابدأ التدريبات الإضافية (${nAll} سؤال)</button>` : ''}
+                            </div>`;
+                        container.innerHTML = `
+                            <div class="max-w-xl mx-auto space-y-4">
+                                ${stepper}
+                                <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-lg text-center space-y-5">
+                                    <div class="w-20 h-20 rounded-full ${totalPct >= 70 ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'} flex items-center justify-center text-3xl mx-auto">
+                                        <i class="fa-solid ${totalPct >= 70 ? 'fa-trophy' : 'fa-graduation-cap'}"></i>
+                                    </div>
+                                    <h2 class="text-xl font-bold text-slate-900">${totalPct >= 70 ? 'أحسنت وبارك الله في جهودك يا بطل!' : 'محاولة طيبة، ويسعدنا إعادة التدريب لتعزيز فهمك!'}</h2>
+                                    <p class="text-xs text-slate-600">أنجزت جميع مراحل تدريب: <strong>${lessonTitleFor(selectedQuizLesson)}</strong>.</p>
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-sm text-right border border-slate-200 rounded-xl overflow-hidden">
+                                            <thead class="bg-slate-100 text-xs text-slate-600">
+                                                <tr><th class="p-3">المرحلة</th><th class="p-3">الصحيحة</th><th class="p-3">النقاط</th></tr>
+                                            </thead>
+                                            <tbody>
+                                                ${levels.map(l => `
+                                                    <tr class="border-t border-slate-200">
+                                                        <td class="p-3 font-bold ${l.text}"><i class="fa-solid ${l.icon} ml-1"></i>${l.name}</td>
+                                                        <td class="p-3">${levelCorrect[l.key] || 0} من ${l.questions.length}</td>
+                                                        <td class="p-3 font-bold">${earned(l)} من ${maxPts(l)}</td>
+                                                    </tr>`).join('')}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 font-bold text-[#8a1538] text-lg">
+                                        مجموع نقاطك: ${pointsSoFar} من ${pointsMax} (${totalPct}%)
+                                    </div>
+                                    ${remedialBox}
+                                    <div class="pt-2 flex justify-center gap-3">
+                                        <button onclick="restartQuiz()" class="px-5 py-2.5 primary-button text-xs font-bold flex items-center gap-2">
+                                            <i class="fa-solid fa-rotate-right"></i>
+                                            <span>إعادة التدريب من جديد</span>
+                                        </button>
+                                        <button onclick="go('home')" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold">الرئيسة</button>
+                                    </div>
+                                </div>
+                            </div>`;
+                    }
+                    return;
+                }
+
+                // ---------- شاشة السؤال ----------
+                const currentQ = lv.questions[currentQuizIndex];
+                const isCorrect = selectedOption === currentQ.correct;
+                const isLastInLevel = currentQuizIndex === totalQ - 1;
+                container.innerHTML = `
+                    <div class="space-y-4 max-w-3xl mx-auto">
+                        ${stepper}
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 flex items-center justify-between gap-3 shadow-sm">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="px-3 py-1 rounded-full ${lv.badge} text-xs font-bold">${lv.name}</span>
+                                <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">سؤال ${currentQuizIndex + 1} من ${totalQ}</span>
+                                <span class="px-3 py-1 rounded-full bg-[#8a1538]/10 text-[#8a1538] text-xs font-bold"><i class="fa-solid fa-star ml-1"></i>نقاطك: ${pointsSoFar}</span>
+                            </div>
+                            <div class="w-1/4 bg-slate-100 h-2.5 rounded-full overflow-hidden hidden sm:block">
+                                <div class="${lv.bar} h-full transition-all duration-300" style="width: ${((currentQuizIndex + (isAnswerSubmitted ? 1 : 0)) / totalQ) * 100}%"></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-md space-y-6">
+                            <h3 class="font-bold text-base md:text-lg text-slate-900 leading-relaxed">${currentQ.question}</h3>
+                            <div class="space-y-3">
+                                ${currentQ.options.map((opt, idx) => {
+                                    let btnStyle = "border-slate-200 hover:bg-slate-50 text-slate-700";
+                                    let icon = "";
+                                    if (isAnswerSubmitted) {
+                                        if (idx === currentQ.correct) {
+                                            btnStyle = "bg-emerald-50 border-emerald-500 text-emerald-800 font-bold";
+                                            icon = '<i class="fa-solid fa-circle-check text-emerald-600 float-left text-lg"></i>';
+                                        } else if (idx === selectedOption) {
+                                            btnStyle = "bg-rose-50 border-rose-500 text-rose-800 font-bold";
+                                            icon = '<i class="fa-solid fa-circle-xmark text-rose-600 float-left text-lg"></i>';
+                                        } else {
+                                            btnStyle = "border-slate-200 opacity-50 text-slate-500";
+                                        }
+                                    } else if (selectedOption === idx) {
+                                        btnStyle = "border-[#8a1538] bg-[#8a1538]/5 font-bold text-[#8a1538]";
+                                    }
+                                    return `
+                                        <button onclick="selectOption(${idx})" ${isAnswerSubmitted ? 'disabled' : ''} class="w-full p-4 rounded-xl border text-right text-xs md:text-sm transition-all font-['Open_Sans'] flex items-center justify-between ${btnStyle}">
+                                            <span>${opt}</span>
+                                            ${icon}
+                                        </button>
+                                    `;
+                                }).join('')}
+                            </div>
+
+                            ${!isAnswerSubmitted ? `
+                                <div class="pt-2 flex items-center justify-between">
+                                    <span class="text-xs text-slate-400">قيمة السؤال: ${lv.points} ${lv.points === 1 ? 'نقطة' : 'نقاط'}</span>
+                                    <button onclick="submitAnswer(${currentQ.correct})" ${selectedOption === null ? 'disabled class="px-6 py-3 bg-slate-200 text-slate-400 rounded-xl text-xs font-bold cursor-not-allowed"' : 'class="px-6 py-3 primary-button text-xs font-bold shadow-md hover:shadow-lg"'}>
+                                        تأكيد الإجابة
+                                    </button>
+                                </div>
+                            ` : `
+                                <div class="p-5 rounded-2xl ${isCorrect ? 'bg-emerald-50 border border-emerald-200' : 'bg-rose-50 border border-rose-200'} space-y-3">
+                                    <div class="flex items-center gap-2 font-bold text-sm ${isCorrect ? 'text-emerald-800' : 'text-rose-800'}">
+                                        <i class="fa-solid ${isCorrect ? 'fa-face-smile-beam text-emerald-600' : 'fa-circle-xmark text-rose-600'} text-lg"></i>
+                                        <span>${isCorrect ? 'إجابة صحيحة! أحسنت 🎉 (+' + lv.points + ' ' + (lv.points === 1 ? 'نقطة' : 'نقاط') + ')' : 'إجابتك خاطئة! الإجابة الصحيحة هي: (' + currentQ.options[currentQ.correct] + ')'}</span>
+                                    </div>
+
+                                    <div class="pt-2 space-y-2 border-t border-slate-200/60">
+                                        <h4 class="font-bold text-xs md:text-sm text-slate-800 font-['Cairo']">التوضيح والتعليل العلمي:</h4>
+                                        <div class="p-4 rounded-xl bg-white/90 border border-slate-200 text-xs md:text-sm font-['Open_Sans'] text-slate-700 leading-relaxed shadow-sm">
+                                            ${currentQ.explanation || 'توضيح الإجابة وفق القواعد النحوية.'}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="pt-2 flex justify-end">
+                                    <button onclick="nextQuestion()" class="px-6 py-3 bg-[#165A7B] hover:bg-[#124963] text-white rounded-xl text-xs font-bold shadow-md flex items-center gap-2">
+                                        <span>${isLastInLevel ? 'عرض نتيجة المرحلة' : 'السؤال التالي'}</span>
+                                        <i class="fa-solid fa-arrow-left"></i>
+                                    </button>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                `;
+            } else if (portalData.currentView === 'comprehensive') {
+                const studentBranch = portalData.studentBranch;
+                const filteredQuizzes = branchQuizzes(studentBranch);
+                container.innerHTML = `
+                    <div class="max-w-3xl mx-auto bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                        <div class="flex items-center justify-between border-b pb-4">
+                            <div>
+                                <h1 class="text-lg md:text-xl font-bold text-[#8a1538]">اختبارات شاملة (${studentBranch === 'sci' ? 'الفرع العلمي' : 'الفرع الأدبي'})</h1>
+                                <p class="text-xs text-slate-500 font-['Open_Sans']">تقييم تحصيلي شامل لجميع دروس ومقررات الفرع</p>
+                            </div>
+                            <button onclick="go('home')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold">
+                                الرئيسة
+                            </button>
+                        </div>
+                        <div class="gov-gray-box p-6 rounded-xl space-y-4 text-center">
+                            <div class="w-16 h-16 rounded-full bg-[#165A7B]/10 text-[#165A7B] flex items-center justify-center text-2xl mx-auto">
+                                <i class="fa-solid fa-file-lines"></i>
+                            </div>
+                            <h3 class="font-bold text-base text-slate-900">جاهز لبدء الاختبار الشامل؟</h3>
+                            <p class="text-xs md:text-sm text-slate-600 font-['Open_Sans'] max-w-lg mx-auto">
+                                يجمع هذا الاختبار أسئلة جميع دروس التدريبات على ثلاث مراحل (سهل ← متوسط ← صعب) مع نتيجة ونقاط في كل مرحلة، لتقييم مستواك النهائي واستعدادك للامتحانات الرسمية.
+                            </p>
+                            <div class="pt-2">
+                                <button onclick="openQuizLesson('__all__')" class="px-6 py-3 primary-button text-xs font-bold shadow-md">
+                                    بدء الاختبار الشامل الآن (${filteredQuizzes.length} سؤال)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (portalData.currentView === 'about') {
+                container.innerHTML = `
+                    <div class="max-w-3xl mx-auto bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                        <div class="flex items-center gap-3 border-b pb-4">
+                            <div class="w-12 h-12 rounded-xl maroon-header text-white flex items-center justify-center font-bold text-xl shadow">
+                                أ
+                            </div>
+                            <div>
+                                <h1 class="text-lg md:text-xl font-bold text-[#8a1538]">عن منصة الإصباح التعليمية</h1>
+                                <p class="text-xs text-slate-500 font-['Open_Sans']">منصة متخصصة في تدريس اللغة العربية لمرحلة الثانوية العامة</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 text-xs md:text-sm text-slate-700 leading-relaxed font-['Open_Sans']">
+                            <p>
+                                تهدف منصة <strong>الإصباح في اللغة العربية</strong> إلى تسهيل وتبسيط مقرر النحو والصرف والقواعد لطلاب الصف الثاني عشر بقسميه (العلمي والأدبي) وفق أحدث المناهج والخطط الدراسية.
+                            </p>
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-100 flex justify-end">
+                            <button onclick="go('home')" class="px-5 py-2.5 primary-button text-xs font-bold shadow">
+                                العودة للصفحة الرئيسية
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else if (portalData.currentView === 'admin') {
+                container.innerHTML = renderAdminDashboard();
+            }
+        }
+
+        function renderAdminDashboard() {
+            return `
+                <div class="max-w-5xl mx-auto space-y-6">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-xl bg-[#8a1538] text-white flex items-center justify-center text-xl font-bold shadow">
+                                <i class="fa-solid fa-sliders"></i>
+                            </div>
+                            <div>
+                                <h1 class="text-lg md:text-xl font-bold text-slate-900 flex items-center gap-2">
+                                    <span>لوحة تحكم الأدمن الشاملة</span>
+                                    <span class="text-xs bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full font-bold">نشط</span>
+                                </h1>
+                                <p class="text-xs text-slate-500 font-['Open_Sans']">التحكم الكامل بالإعلانات والدروس وبنك الأسئلة</p>
+                            </div>
+                        </div>
+                        <button onclick="go('home')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5">
+                            <i class="fa-solid fa-house"></i>
+                            <span>معاينة الواجهة الرئيسية</span>
+                        </button>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-2">
+                        <button onclick="switchAdminTab('settings')" class="px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all ${activeAdminTab === 'settings' ? 'admin-tab-active shadow' : 'bg-white text-slate-700 hover:bg-slate-100'}">
+                            <i class="fa-solid fa-user-gear ml-1"></i>
+                            <span>بيانات المعلم</span>
+                        </button>
+                        <button onclick="switchAdminTab('announcements')" class="px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all ${activeAdminTab === 'announcements' ? 'admin-tab-active shadow' : 'bg-white text-slate-700 hover:bg-slate-100'}">
+                            <i class="fa-solid fa-bullhorn ml-1"></i>
+                            <span>الشريط الإخباري</span>
+                        </button>
+                        <button onclick="switchAdminTab('lessons')" class="px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all ${activeAdminTab === 'lessons' ? 'admin-tab-active shadow' : 'bg-white text-slate-700 hover:bg-slate-100'}">
+                            <i class="fa-solid fa-book-open ml-1"></i>
+                            <span>إدارة الدروس</span>
+                        </button>
+                        <button onclick="switchAdminTab('quizzes')" class="px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all ${activeAdminTab === 'quizzes' ? 'admin-tab-active shadow' : 'bg-white text-slate-700 hover:bg-slate-100'}">
+                            <i class="fa-solid fa-list-check ml-1"></i>
+                            <span>إدارة الأسئلة والتعديل</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                        ${renderAdminTabContent()}
+                    </div>
+                </div>
+            `;
+        }
+
+        function switchAdminTab(tab) {
+            activeAdminTab = tab;
+            renderApp();
+        }
+
+        function renderAdminTabContent() {
+            if (activeAdminTab === 'settings') {
+                return `
+                    <div class="space-y-4">
+                        <h3 class="font-bold text-slate-900 border-b pb-3 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-id-card text-[#8a1538]"></i>
+                            <span>تعديل بيانات وصورة معلم المادة</span>
+                        </h3>
+                        <form onsubmit="saveTeacherData(event)" class="space-y-4 text-xs md:text-sm">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="space-y-1.5">
+                                    <label class="block font-bold text-slate-700">اسم المعلم:</label>
+                                    <input type="text" id="admin-teacher-name" value="${portalData.teacherName}" required class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#8a1538] outline-none">
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="block font-bold text-slate-700">المسمى الوظيفي / الوصف:</label>
+                                    <input type="text" id="admin-teacher-title" value="${portalData.teacherTitle}" required class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#8a1538] outline-none">
+                                </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="block font-bold text-slate-700">مسار أو رابط صورة المعلم:</label>
+                                <input type="text" id="admin-teacher-photo" value="${portalData.teacherPhoto}" required class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#8a1538] outline-none">
+                            </div>
+                            <div class="pt-2">
+                                <button type="submit" class="px-6 py-2.5 primary-button text-xs font-bold shadow">
+                                    حفظ وتحديث ملف المعلم
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+            } else if (activeAdminTab === 'announcements') {
+                return `
+                    <div class="space-y-4">
+                        <h3 class="font-bold text-slate-900 border-b pb-3 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-bullhorn text-[#8a1538]"></i>
+                            <span>التحكم بالإعلان العلوي المباشر</span>
+                        </h3>
+                        <form onsubmit="saveAnnouncement(event)" class="space-y-4 text-xs md:text-sm">
+                            <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                <input type="checkbox" id="announcement-active" ${portalData.announcement.active ? 'checked' : ''} class="w-5 h-5 text-[#8a1538] rounded">
+                                <label for="announcement-active" class="font-bold text-slate-800 cursor-pointer">تفعيل عرض شريط الإعلانات في أعلى الموقع</label>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="block font-bold text-slate-700">نص الإعلان أو التنبيه:</label>
+                                <textarea id="announcement-text-input" rows="3" required class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#8a1538] outline-none">${portalData.announcement.text || ''}</textarea>
+                            </div>
+                            <button type="submit" class="px-6 py-2.5 primary-button text-xs font-bold shadow">
+                                حفظ ونشر الإعلان
+                            </button>
+                        </form>
+                    </div>
+                `;
+            } else if (activeAdminTab === 'lessons') {
+                return `
+                    <div class="space-y-6">
+                        <div class="flex justify-between items-center border-b pb-3">
+                            <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-book-open text-[#8a1538]"></i>
+                                <span>إدارة الشروحات والدروس</span>
+                            </h3>
+                            <button onclick="openAddLessonModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>إضافة درس جديد</span>
+                            </button>
+                        </div>
+
+                        <div class="space-y-4">
+                            <h4 class="font-bold text-xs text-[#165A7B] bg-[#165A7B]/10 p-2 rounded-lg">دروس الفرع العلمي (${portalData.branches.sci.lessons.length})</h4>
+                            <div class="space-y-2">
+                                ${portalData.branches.sci.lessons.map(l => `
+                                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center text-xs">
+                                        <div>
+                                            <span class="font-bold text-slate-900">${l.title}</span>
+                                            <span class="text-slate-500 mr-2">(${l.category})</span>
+                                        </div>
+                                        <div class="flex gap-2">
+                                            <button onclick="deleteLesson('sci', ${l.id})" class="text-rose-600 hover:underline font-bold">حذف</button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+
+                            <h4 class="font-bold text-xs text-[#8a1538] bg-[#8a1538]/10 p-2 rounded-lg mt-4">دروس الفرع الأدبي (${portalData.branches.lit.lessons.length})</h4>
+                            <div class="space-y-2">
+                                ${portalData.branches.lit.lessons.map(l => `
+                                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center text-xs">
+                                        <div>
+                                            <span class="font-bold text-slate-900">${l.title}</span>
+                                            <span class="text-slate-500 mr-2">(${l.category})</span>
+                                        </div>
+                                        <div class="flex gap-2">
+                                            <button onclick="deleteLesson('lit', ${l.id})" class="text-rose-600 hover:underline font-bold">حذف</button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (activeAdminTab === 'quizzes') {
+                return `
+                    <div class="space-y-6">
+                        <div class="flex justify-between items-center border-b pb-3">
+                            <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-list-check text-[#8a1538]"></i>
+                                <span>إدارة وتعديل الأسئلة والشرح والتعليل (${portalData.quizzes.length} سؤال)</span>
+                            </h3>
+                            <button onclick="openAddQuizModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>إضافة سؤال جديد</span>
+                            </button>
+                        </div>
+
+                        <div class="space-y-4">
+                            ${portalData.quizzes.map((q, idx) => `
+                                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3 text-xs">
+                                    <div class="flex justify-between items-start">
+                                        <div class="space-y-1">
+                                            <span class="font-bold text-slate-900 text-sm">${idx + 1}. ${q.question}</span>
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${q.branch === 'sci' ? 'bg-sky-100 text-sky-800' : q.branch === 'lit' ? 'bg-rose-100 text-rose-800' : 'bg-slate-200 text-slate-800'} mr-2">
+                                                ${branchLabel(q.branch)}
+                                            </span>
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${levelMeta(q.level).badge}">${levelMeta(q.level).name}</span>
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 mr-2">${q.lesson || GENERAL_LESSON}</span>
+                                        </div>
+                                        <div class="flex gap-2 shrink-0">
+                                            <button onclick="openEditQuizModal(${q.id})" class="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-bold flex items-center gap-1">
+                                                <i class="fa-solid fa-pen"></i>
+                                                <span>تعديل</span>
+                                            </button>
+                                            <button onclick="deleteQuiz(${q.id})" class="px-3 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-bold">حذف</button>
+                                        </div>
+                                    </div>
+                                    <div class="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                                        <p class="text-slate-600"><strong>الإجابة الصحيحة:</strong> <span class="text-emerald-700 font-bold">${q.options[q.correct]}</span></p>
+                                        <p class="text-slate-600"><strong>الشرح والتعليل العلمي:</strong> <span class="text-slate-800">${q.explanation}</span></p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function saveTeacherData(e) {
+            e.preventDefault();
+            portalData.teacherName = document.getElementById('admin-teacher-name').value.trim();
+            portalData.teacherTitle = document.getElementById('admin-teacher-title').value.trim();
+            portalData.teacherPhoto = document.getElementById('admin-teacher-photo').value.trim();
+
+            localStorage.setItem('esbah_teacherName', portalData.teacherName);
+            localStorage.setItem('esbah_teacherTitle', portalData.teacherTitle);
+            localStorage.setItem('esbah_teacherPhoto', portalData.teacherPhoto);
+
+            alert('تم حفظ بيانات المعلم بنجاح!');
+            renderApp();
+        }
+
+        function saveAnnouncement(e) {
+            e.preventDefault();
+            portalData.announcement = {
+                active: document.getElementById('announcement-active').checked,
+                text: document.getElementById('announcement-text-input').value.trim()
+            };
+            localStorage.setItem('esbah_announcement', JSON.stringify(portalData.announcement));
+            alert('تم تحديث الشريطة الإخبارية!');
+            updateAnnouncementDisplay();
+            renderApp();
+        }
+
+        function openAddLessonModal() {
+            const modal = document.getElementById('admin-editor-modal');
+            const content = document.getElementById('editor-modal-content');
+            content.innerHTML = `
+                <div class="flex justify-between items-center border-b pb-3">
+                    <h3 class="font-bold text-slate-900 text-base">إضافة درس جديد للمقرر</h3>
+                    <button onclick="closeEditorModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+                </div>
+                <form onsubmit="handleAddLessonSubmit(event)" class="space-y-4 text-xs md:text-sm pt-2">
+                    <div class="space-y-1">
+                        <label class="block font-bold">الفرع الدراسي:</label>
+                        <select id="modal-lesson-branch" class="w-full p-3 border rounded-xl outline-none">
+                            <option value="all">كلا الفرعين</option>
+                            <option value="sci">الفرع العلمي</option>
+                            <option value="lit">الفرع الأدبي</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block font-bold">عنوان الدرس:</label>
+                        <input type="text" id="modal-lesson-title" required class="w-full p-3 border rounded-xl outline-none">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block font-bold">التصنيف (مثال: النحو والصرف):</label>
+                        <input type="text" id="modal-lesson-category" required class="w-full p-3 border rounded-xl outline-none">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block font-bold">الملخص السريع:</label>
+                        <textarea id="modal-lesson-summary" rows="2" required class="w-full p-3 border rounded-xl outline-none"></textarea>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block font-bold">التفاصيل الشاملة والقواعد:</label>
+                        <textarea id="modal-lesson-details" rows="4" required class="w-full p-3 border rounded-xl outline-none"></textarea>
+                    </div>
+                    <button type="submit" class="w-full py-3 primary-button font-bold">إضافة الدرس الآن</button>
+                </form>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function handleAddLessonSubmit(e) {
+            e.preventDefault();
+            const branch = document.getElementById('modal-lesson-branch').value;
+            const newLesson = {
+                id: Date.now(),
+                title: document.getElementById('modal-lesson-title').value.trim(),
+                category: document.getElementById('modal-lesson-category').value.trim(),
+                summary: document.getElementById('modal-lesson-summary').value.trim(),
+                details: document.getElementById('modal-lesson-details').value.trim()
+            };
+            portalData.branches[branch].lessons.push(newLesson);
+            localStorage.setItem('esbah_branches', JSON.stringify(portalData.branches));
+            closeEditorModal();
+            alert('تمت إضافة الدرس بنجاح!');
+            renderApp();
+        }
+
+        function deleteLesson(branch, id) {
+            if (confirm('هل أنت تأكد من رغبتك في حذف هذا الدرس؟')) {
+                portalData.branches[branch].lessons = portalData.branches[branch].lessons.filter(l => l.id !== id);
+                localStorage.setItem('esbah_branches', JSON.stringify(portalData.branches));
+                renderApp();
+            }
+        }
+
+        function openAddQuizModal() {
+            const modal = document.getElementById('admin-editor-modal');
+            const content = document.getElementById('editor-modal-content');
+            content.innerHTML = `
+                <div class="flex justify-between items-center border-b pb-3">
+                    <h3 class="font-bold text-slate-900 text-base">إضافة سؤال جديد لبنك الأسئلة</h3>
+                    <button onclick="closeEditorModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+                </div>
+                <form onsubmit="handleAddQuizSubmit(event)" class="space-y-3 text-xs md:text-sm pt-2">
+                    <div class="space-y-1">
+                        <label class="block font-bold">الفرع الموجه له السؤال:</label>
+                        <select id="modal-quiz-branch" class="w-full p-2.5 border rounded-xl outline-none">
+                            <option value="all">كلا الفرعين</option>
+                            <option value="sci">الفرع العلمي</option>
+                            <option value="lit">الفرع الأدبي</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block font-bold">الدرس (اسم التدريب):</label>
+                        <input type="text" id="modal-quiz-lesson" list="lesson-names-list" required placeholder="اختر درساً أو اكتب اسماً جديداً" class="w-full p-2.5 border rounded-xl outline-none">
+                        <datalist id="lesson-names-list">${allLessonNames().map(n => `<option value="${n}"></option>`).join('')}</datalist>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block font-bold">مستوى السؤال:</label>
+                        <select id="modal-quiz-level" class="w-full p-2.5 border rounded-xl outline-none">
+                            <option value="easy">سهل (نقطة واحدة)</option>
+                            <option value="medium" selected>متوسط (نقطتان)</option>
+                            <option value="hard">صعب (3 نقاط)</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block font-bold">نص السؤال:</label>
+                        <textarea id="modal-quiz-question" rows="2" required class="w-full p-2.5 border rounded-xl outline-none"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-bold">الخيار الأول (0):</label>
+                            <input type="text" id="modal-opt-0" required class="w-full p-2 border rounded-xl outline-none">
+                        </div>
+                        <div>
+                            <label class="block font-bold">الخيار الثاني (1):</label>
+                            <input type="text" id="modal-opt-1" required class="w-full p-2 border rounded-xl outline-none">
+                        </div>
+                        <div>
+                            <label class="block font-bold">الخيار الثالث (2):</label>
+                            <input type="text" id="modal-opt-2" required class="w-full p-2 border rounded-xl outline-none">
+                        </div>
+                        <div>
+                            <label class="block font-bold">الخيار الرابع (3):</label>
+                            <input type="text" id="modal-opt-3" required class="w-full p-2 border rounded-xl outline-none">
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block font-bold">رقم الخيار الصحيح:</label>
+                        <select id="modal-quiz-correct" class="w-full p-2.5 border rounded-xl outline-none">
+                            <option value="0">الخيار الأول (0)</option>
+                            <option value="1">الخيار الثاني (1)</option>
+                            <option value="2">الخيار الثالث (2)</option>
+                            <option value="3">الخيار الرابع (3)</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block font-bold">الشرح والتعليل العلمي للإجابة:</label>
+                        <textarea id="modal-quiz-explanation" rows="2" required class="w-full p-2.5 border rounded-xl outline-none"></textarea>
+                    </div>
+                    <button type="submit" class="w-full py-3 primary-button font-bold">حفظ وإضافة السؤال</button>
+                </form>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function openEditQuizModal(quizId) {
+            const quiz = portalData.quizzes.find(q => q.id === quizId);
+            if (!quiz) return;
+
+            const modal = document.getElementById('admin-editor-modal');
+            const content = document.getElementById('editor-modal-content');
+            content.innerHTML = `
+                <div class="flex justify-between items-center border-b pb-3">
+                    <h3 class="font-bold text-slate-900 text-base">تعديل السؤال والشرح والتعليل</h3>
+                    <button onclick="closeEditorModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+                </div>
+                <form onsubmit="handleEditQuizSubmit(event, ${quiz.id})" class="space-y-3 text-xs md:text-sm pt-2">
+                    <div class="space-y-1">
+                        <label class="block font-bold">الفرع الموجه له السؤال:</label>
+                        <select id="modal-quiz-branch" class="w-full p-2.5 border rounded-xl outline-none">
+                            <option value="all" ${quiz.branch === 'all' ? 'selected' : ''}>كلا الفرعين</option>
+                            <option value="sci" ${quiz.branch === 'sci' ? 'selected' : ''}>الفرع العلمي</option>
+                            <option value="lit" ${quiz.branch === 'lit' ? 'selected' : ''}>الفرع الأدبي</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block font-bold">الدرس (اسم التدريب):</label>
+                        <input type="text" id="modal-quiz-lesson" list="lesson-names-list" required value="${quiz.lesson || GENERAL_LESSON}" class="w-full p-2.5 border rounded-xl outline-none">
+                        <datalist id="lesson-names-list">${allLessonNames().map(n => `<option value="${n}"></option>`).join('')}</datalist>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block font-bold">مستوى السؤال:</label>
+                        <select id="modal-quiz-level" class="w-full p-2.5 border rounded-xl outline-none">
+                            <option value="easy" ${(quiz.level || 'medium') === 'easy' ? 'selected' : ''}>سهل (نقطة واحدة)</option>
+                            <option value="medium" ${(quiz.level || 'medium') === 'medium' ? 'selected' : ''}>متوسط (نقطتان)</option>
+                            <option value="hard" ${(quiz.level || 'medium') === 'hard' ? 'selected' : ''}>صعب (3 نقاط)</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block font-bold">نص السؤال:</label>
+                        <textarea id="modal-quiz-question" rows="2" required class="w-full p-2.5 border rounded-xl outline-none">${quiz.question}</textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-bold">الخيار الأول (0):</label>
+                            <input type="text" id="modal-opt-0" value="${quiz.options[0]}" required class="w-full p-2 border rounded-xl outline-none">
+                        </div>
+                        <div>
+                            <label class="block font-bold">الخيار الثاني (1):</label>
+                            <input type="text" id="modal-opt-1" value="${quiz.options[1]}" required class="w-full p-2 border rounded-xl outline-none">
+                        </div>
+                        <div>
+                            <label class="block font-bold">الخيار الثالث (2):</label>
+                            <input type="text" id="modal-opt-2" value="${quiz.options[2]}" required class="w-full p-2 border rounded-xl outline-none">
+                        </div>
+                        <div>
+                            <label class="block font-bold">الخيار الرابع (3):</label>
+                            <input type="text" id="modal-opt-3" value="${quiz.options[3]}" required class="w-full p-2 border rounded-xl outline-none">
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block font-bold">رقم الخيار الصحيح:</label>
+                        <select id="modal-quiz-correct" class="w-full p-2.5 border rounded-xl outline-none">
+                            <option value="0" ${quiz.correct === 0 ? 'selected' : ''}>الخيار الأول (0)</option>
+                            <option value="1" ${quiz.correct === 1 ? 'selected' : ''}>الخيار الثاني (1)</option>
+                            <option value="2" ${quiz.correct === 2 ? 'selected' : ''}>الخيار الثالث (2)</option>
+                            <option value="3" ${quiz.correct === 3 ? 'selected' : ''}>الخيار الرابع (3)</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block font-bold">التعديل على الشرح والتعليل التوضيحي:</label>
+                        <textarea id="modal-quiz-explanation" rows="3" required class="w-full p-2.5 border rounded-xl outline-none">${quiz.explanation}</textarea>
+                    </div>
+                    <button type="submit" class="w-full py-3 primary-button font-bold">تحديث التعديلات وحفظها</button>
+                </form>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function handleEditQuizSubmit(e, quizId) {
+            e.preventDefault();
+            const index = portalData.quizzes.findIndex(q => q.id === quizId);
+            if (index !== -1) {
+                portalData.quizzes[index] = {
+                    id: quizId,
+                    branch: document.getElementById('modal-quiz-branch').value,
+                    level: document.getElementById('modal-quiz-level').value,
+                    lesson: document.getElementById('modal-quiz-lesson').value.trim() || GENERAL_LESSON,
+                    question: document.getElementById('modal-quiz-question').value.trim(),
+                    options: [
+                        document.getElementById('modal-opt-0').value.trim(),
+                        document.getElementById('modal-opt-1').value.trim(),
+                        document.getElementById('modal-opt-2').value.trim(),
+                        document.getElementById('modal-opt-3').value.trim()
+                    ],
+                    correct: parseInt(document.getElementById('modal-quiz-correct').value),
+                    explanation: document.getElementById('modal-quiz-explanation').value.trim()
+                };
+                localStorage.setItem('esbah_quizzes', JSON.stringify(portalData.quizzes));
+                closeEditorModal();
+                alert('تم تعديل السؤال والشرح والتعليل بنجاح!');
+                renderApp();
+            }
+        }
+
+        function handleAddQuizSubmit(e) {
+            e.preventDefault();
+            const newQuiz = {
+                id: Date.now(),
+                branch: document.getElementById('modal-quiz-branch').value,
+                level: document.getElementById('modal-quiz-level').value,
+                    lesson: document.getElementById('modal-quiz-lesson').value.trim() || GENERAL_LESSON,
+                question: document.getElementById('modal-quiz-question').value.trim(),
+                options: [
+                    document.getElementById('modal-opt-0').value.trim(),
+                    document.getElementById('modal-opt-1').value.trim(),
+                    document.getElementById('modal-opt-2').value.trim(),
+                    document.getElementById('modal-opt-3').value.trim()
+                ],
+                correct: parseInt(document.getElementById('modal-quiz-correct').value),
+                explanation: document.getElementById('modal-quiz-explanation').value.trim()
+            };
+            portalData.quizzes.push(newQuiz);
+            localStorage.setItem('esbah_quizzes', JSON.stringify(portalData.quizzes));
+            closeEditorModal();
+            alert('تمت إضافة السؤال بنجاح!');
+            renderApp();
+        }
+
+        function deleteQuiz(id) {
+            if (confirm('هل أنت تأكد من رغبتك في حذف هذا السؤال؟')) {
+                portalData.quizzes = portalData.quizzes.filter(q => q.id !== id);
+                localStorage.setItem('esbah_quizzes', JSON.stringify(portalData.quizzes));
+                renderApp();
+            }
+        }
+
+        function closeEditorModal() {
+            document.getElementById('admin-editor-modal').classList.add('hidden');
+        }
+
+        function selectOption(index) {
+            selectedOption = index;
+            renderApp();
+        }
+
+        function submitAnswer(correctIndex) {
+            isAnswerSubmitted = true;
+            const lv = activeLevels(portalData.studentBranch, selectedQuizLesson)[currentLevelPos];
+            if (lv && selectedOption === correctIndex) {
+                levelCorrect[lv.key] = (levelCorrect[lv.key] || 0) + 1;
+                quizScore += lv.points;
+            } else if (lv) {
+                weakSkills[skillOf(lv.questions[currentQuizIndex])] = true;
+            }
+            renderApp();
+        }
+
+        function nextQuestion() {
+            const lv = activeLevels(portalData.studentBranch, selectedQuizLesson)[currentLevelPos];
+            currentQuizIndex++;
+            selectedOption = null;
+            isAnswerSubmitted = false;
+            if (lv && currentQuizIndex >= lv.questions.length) stageResultShown = true;
+            renderApp();
+        }
+
+        function goNextLevel() {
+            currentLevelPos++;
+            currentQuizIndex = 0;
+            stageResultShown = false;
+            selectedOption = null;
+            isAnswerSubmitted = false;
+            renderApp();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function restartQuiz() {
+            resetQuizState();
+            renderApp();
+        }
+
+        window.onload = function() {
+            document.body.style.fontSize = portalData.fontSizeMultiplier + 'px';
+            renderApp();
+            updateStudentBadge();
+            updateAnnouncementDisplay();
+            updateHeaderNav();
+        };
+    </script>
+</body>
+</html>
